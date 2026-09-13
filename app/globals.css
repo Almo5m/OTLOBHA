@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================================
+   DESIGN TOKENS — مصدر واحد للحقيقة
+   أي تعديل في الهوية البصرية يتم من هنا فقط
+   ===================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- Light Theme: أبيض أساسي حقيقي، مع دعم أسود محايد للأزرار/الحدود/النصوص --- */
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F6F6F7;
+  --color-border: #E3E3E6;
+  --color-text-primary: #131315;
+  --color-text-secondary: #6B6B70;
+
+  /* Ink: الأسود المحايد المستخدم في الأزرار الأساسية والتأكيدات القوية */
+  --color-ink: #131315;
+  --color-ink-contrast: #FFFFFF;
+
+  /* Accent: تركواز حيوي — يُستخدم باعتدال للروابط/التمييز/توهج Neon */
+  --color-accent: #0DB8A8;
+  --color-accent-strong: #0A8F82;
+  --color-accent-soft: #E3FAF6;
+  --color-accent-neon: #00E6C3;
+
+  /* Brand (احتياطي لتوافق الكود القديم) — نفس الأسود المحايد الآن */
+  --color-brand: #131315;
+  --color-brand-dark: #000000;
+
+  /* Semantic */
+  --color-success: #229A5B;
+  --color-warning: #B9820F;
+  --color-error: #DC3B41;
+  --color-info: #2C86D8;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* Shadows — soft, light theme */
+  --shadow-sm: 0 1px 2px rgba(19, 19, 21, 0.06);
+  --shadow-md: 0 6px 20px rgba(19, 19, 21, 0.08);
+  --shadow-lg: 0 16px 40px rgba(19, 19, 21, 0.12);
+  --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* --- Dark Theme: أسود كلاسيكي مريح للعين (محايد)، مش كحلي ومش أسود خام --- */
+  --color-bg: #141416;
+  --color-surface: #1C1C1F;
+  --color-surface-elevated: #25252A;
+  --color-border: #34343A;
+  --color-text-primary: #F2F2F3;
+  --color-text-secondary: #A0A0A6;
+
+  /* Ink مقلوب في الدارك: أبيض تقريبًا عشان يفضل يعطي تباين قوي كزر أساسي */
+  --color-ink: #F2F2F3;
+  --color-ink-contrast: #131315;
+
+  --color-accent: #22E6D0;
+  --color-accent-strong: #17BFAE;
+  --color-accent-soft: #123A36;
+  --color-accent-neon: #39FFE0;
+
+  --color-brand: #F2F2F3;
+  --color-brand-dark: #FFFFFF;
+
+  --color-success: #3FCB7C;
+  --color-warning: #E3AC42;
+  --color-error: #F0666B;
+  --color-info: #5CB3E8;
+
+  /* Dark theme: يعتمد أكثر على الحدود والتوهج بدل الظلال الثقيلة */
+  --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* =====================================================================
+   BASE
+   ===================================================================== */
+
+* { border-color: var(--color-border); }
+
+html { color-scheme: light dark; }
+
+body {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: background-color var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 45%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+/* أرقام وأسعار: تُعرض بخط لاتيني ثابت العرض (Tabular) لسهولة قراءة الفواتير والجداول */
+.numeric {
+  font-family: var(--font-latin), var(--font-arabic), sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* =====================================================================
+   COMPONENTS — كل الصفحات الحالية تستخدم هذه الـClasses بالفعل،
+   فأي تعديل هنا ينعكس على المنتج بالكامل تلقائيًا (One source of truth)
+   ملحوظة تقنية: كل شيء هنا داخل @layer components حتى تستطيع أي
+   Utility class من Tailwind (مثل text-error) أن تُلغي (override) أي
+   قيمة هنا بأمان بغض النظر عن ترتيب الكتابة في الملف.
+   ===================================================================== */
+@layer components {
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
+  background-color: var(--color-ink);
+  color: var(--color-ink-contrast);
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent-neon) 22%, transparent), 0 6px 18px color-mix(in srgb, var(--color-accent-neon) 18%, transparent);
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
+  border: 1.5px solid var(--color-ink);
+  color: var(--color-text-primary);
+  background-color: transparent;
+}
+.btn-secondary:hover { background-color: var(--color-surface-elevated); border-color: var(--color-accent); }
+.btn-secondary:active { transform: scale(0.98); }
+.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-medium transition-all duration-base;
+  color: var(--color-accent-strong);
+  background-color: transparent;
+}
+.btn-ghost:hover { background-color: var(--color-accent-soft); color: var(--color-accent); }
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium text-white transition-all duration-base;
+  background-color: var(--color-error);
+}
+.btn-danger:hover { filter: brightness(0.92); box-shadow: 0 6px 18px color-mix(in srgb, var(--color-error) 30%, transparent); }
+.btn-danger:active { transform: scale(0.98); }
+
+.card {
+  @apply rounded-lg p-5 transition-colors duration-base;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* بطاقات قابلة للنقر (Links/Buttons) — رفعة خفيفة + توهج Neon بسيط عند الـHover */
+.card-interactive {
+  @apply transition-all duration-base;
+  cursor: pointer;
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-accent-neon) 45%, var(--color-border));
+  box-shadow: var(--shadow-md), 0 0 20px color-mix(in srgb, var(--color-accent-neon) 12%, transparent);
+}
+.card-interactive:active {
+  transform: translateY(0);
+}
+
+/* توهج Neon قابل لإعادة الاستخدام لأي عنصر تفاعلي بارز */
+.glow-accent {
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+.glow-accent:hover, .glow-accent.is-active {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 25%, transparent), 0 0 18px color-mix(in srgb, var(--color-accent-neon) 30%, transparent);
+}
+
+.input {
+  @apply w-full rounded-md px-3.5 py-2.5 transition-all duration-fast;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+.input::placeholder { color: var(--color-text-secondary); opacity: 0.7; }
+.input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 22%, transparent);
+  outline: none;
+}
+.input:disabled { opacity: 0.5; cursor: not-allowed; }
+.input.input-error { border-color: var(--color-error); }
+
+.label {
+  @apply mb-1.5 block text-sm;
+  color: var(--color-text-secondary);
+}
+
+.error-text {
+  @apply mt-1 text-sm;
+  color: var(--color-error);
+}
+
+/* Badges — حالات الطلب/الفاتورة/الشكوى وغيرها */
+.badge {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+}
+.badge-neutral { background-color: var(--color-surface-elevated); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
+.badge-accent { background-color: var(--color-accent-soft); color: var(--color-accent-strong); }
+.badge-success { background-color: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
+.badge-warning { background-color: color-mix(in srgb, var(--color-warning) 18%, transparent); color: var(--color-warning); }
+.badge-error { background-color: color-mix(in srgb, var(--color-error) 16%, transparent); color: var(--color-error); }
+.badge-info { background-color: color-mix(in srgb, var(--color-info) 16%, transparent); color: var(--color-info); }
+
+/* Skeleton loading */
+.skeleton {
+  @apply animate-pulseSoft rounded-md;
+  background-color: var(--color-border);
+}
+
+/* Alerts / Banners — تنبيهات كاملة العرض */
+.alert {
+  @apply rounded-lg border px-4 py-3 text-sm;
+}
+.alert-error { background-color: color-mix(in srgb, var(--color-error) 10%, var(--color-surface)); border-color: color-mix(in srgb, var(--color-error) 35%, transparent); color: var(--color-error); }
+.alert-warning { background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface)); border-color: color-mix(in srgb, var(--color-warning) 35%, transparent); color: var(--color-warning); }
+.alert-success { background-color: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); border-color: color-mix(in srgb, var(--color-success) 35%, transparent); color: var(--color-success); }
+.alert-info { background-color: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); color: var(--color-accent-strong); }
+.surface-elevated {
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+/* إخفاء شريط التمرير لعناصر السحب الأفقي (Carousels) مع إبقاء التمرير شغّال */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+} /* end @layer components */
