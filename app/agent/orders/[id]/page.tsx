@@ -23,7 +23,7 @@ export default async function AgentOrderDetailPage({ params }: { params: { id: s
       <AgentNav />
       <main className="mx-auto max-w-2xl px-4 py-6">
         <h1 className="mb-1 flex items-center gap-2 text-xl font-bold">
-          <Icon name={order.status === "shopping" ? "cart" : "delivery"} size={19} className="text-accent" />
+          <Icon name={order.status === "shopping" ? "cart" : "delivery"} size={19} className="text-textSecondary" />
           طلب {order.order_number}
         </h1>
         <p className="mb-4 text-sm text-textSecondary">

@@ -35,7 +35,7 @@ export default async function CategoryProductsPage({ params }: { params: { id: s
               {p.image_url ? (
                 <Image src={p.image_url} alt={p.name} width={56} height={56} className="rounded-md object-cover" />
               ) : (
-                <IconBadge name="products" tone="accent" size="lg" />
+                <IconBadge name="products" size="lg" />
               )}
               <div className="flex-1">
                 <p className="font-medium">{p.name}</p>

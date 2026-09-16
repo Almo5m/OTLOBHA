@@ -15,7 +15,7 @@ export default async function SessionsPage() {
     <>
       <AdminNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="settings" size={20} className="text-accent" /> الجلسات النشطة</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="settings" size={20} className="text-textSecondary" /> الجلسات النشطة</h1>
         <div className="space-y-2">
           {(sessions ?? []).map((s: any) => (
             <div key={s.id} className="card flex items-center justify-between text-sm">

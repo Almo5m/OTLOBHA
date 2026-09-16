@@ -22,19 +22,19 @@
   --color-ink: #131315;
   --color-ink-contrast: #FFFFFF;
 
-  /* Accent: تركواز حيوي — يُستخدم باعتدال للروابط/التمييز/توهج Neon */
-  --color-accent: #0DB8A8;
-  --color-accent-strong: #0A8F82;
-  --color-accent-soft: #E3FAF6;
-  --color-accent-neon: #00E6C3;
+  /* Accent: كهرماني/ذهبي دافئ — هوية اطلبها المميزة، يُستخدم باعتدال للروابط/التمييز */
+  --color-accent: #B9862C;
+  --color-accent-strong: #8F6A1F;
+  --color-accent-soft: #FBF1DC;
+  --color-accent-neon: #E3B84E;
 
   /* Brand (احتياطي لتوافق الكود القديم) — نفس الأسود المحايد الآن */
   --color-brand: #131315;
   --color-brand-dark: #000000;
 
-  /* Semantic */
+  /* Semantic — لاحظ إن Warning اتحول لبرتقالي محروق عشان يتمايز بوضوح عن الذهبي الجديد */
   --color-success: #229A5B;
-  --color-warning: #B9820F;
+  --color-warning: #C1631A;
   --color-error: #DC3B41;
   --color-info: #2C86D8;
 
@@ -72,16 +72,16 @@
   --color-ink: #F2F2F3;
   --color-ink-contrast: #131315;
 
-  --color-accent: #22E6D0;
-  --color-accent-strong: #17BFAE;
-  --color-accent-soft: #123A36;
-  --color-accent-neon: #39FFE0;
+  --color-accent: #E3B84E;
+  --color-accent-strong: #C9982A;
+  --color-accent-soft: #3A2F14;
+  --color-accent-neon: #F0CC6E;
 
   --color-brand: #F2F2F3;
   --color-brand-dark: #FFFFFF;
 
   --color-success: #3FCB7C;
-  --color-warning: #E3AC42;
+  --color-warning: #E08A3E;
   --color-error: #F0666B;
   --color-info: #5CB3E8;
 
@@ -108,8 +108,8 @@ body {
 }
 
 :focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 45%, transparent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
@@ -133,14 +133,10 @@ body {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
   background-color: var(--color-ink);
   color: var(--color-ink-contrast);
-  box-shadow: var(--shadow-glow);
 }
-.btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent-neon) 22%, transparent), 0 6px 18px color-mix(in srgb, var(--color-accent-neon) 18%, transparent);
-}
+.btn-primary:hover { filter: brightness(1.12); }
 .btn-primary:active { transform: scale(0.98); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
@@ -163,7 +159,7 @@ body {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium text-white transition-all duration-base;
   background-color: var(--color-error);
 }
-.btn-danger:hover { filter: brightness(0.92); box-shadow: 0 6px 18px color-mix(in srgb, var(--color-error) 30%, transparent); }
+.btn-danger:hover { filter: brightness(0.92); }
 .btn-danger:active { transform: scale(0.98); }
 
 .card {
@@ -173,26 +169,23 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-/* بطاقات قابلة للنقر (Links/Buttons) — رفعة خفيفة + توهج Neon بسيط عند الـHover */
+/* بطاقات قابلة للنقر (Links/Buttons) — رفعة خفيفة هادئة عند الـHover، بدون توهج */
 .card-interactive {
   @apply transition-all duration-base;
   cursor: pointer;
 }
 .card-interactive:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--color-accent-neon) 45%, var(--color-border));
-  box-shadow: var(--shadow-md), 0 0 20px color-mix(in srgb, var(--color-accent-neon) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+  box-shadow: var(--shadow-md);
 }
 .card-interactive:active {
   transform: translateY(0);
 }
 
-/* توهج Neon قابل لإعادة الاستخدام لأي عنصر تفاعلي بارز */
-.glow-accent {
-  transition: box-shadow var(--duration-base) var(--ease-standard);
-}
-.glow-accent:hover, .glow-accent.is-active {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 25%, transparent), 0 0 18px color-mix(in srgb, var(--color-accent-neon) 30%, transparent);
+/* تمييز هادئ لعنصر نشط (Nav/Timeline) — بدون توهج Neon، حلقة رفيعة بس */
+.active-ring {
+  box-shadow: 0 0 0 2px var(--color-accent);
 }
 
 .input {
@@ -204,7 +197,7 @@ body {
 .input::placeholder { color: var(--color-text-secondary); opacity: 0.7; }
 .input:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-neon) 22%, transparent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
   outline: none;
 }
 .input:disabled { opacity: 0.5; cursor: not-allowed; }

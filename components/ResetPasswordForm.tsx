@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function ResetPasswordForm() {
   const token = useSearchParams().get("token") ?? "";
@@ -41,11 +42,11 @@ export default function ResetPasswordForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label">كلمة المرور الجديدة</label>
-            <input type="password" className="input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <PasswordInput value={password} onChange={setPassword} autoComplete="new-password" required />
           </div>
           <div>
             <label className="label">تأكيد كلمة المرور</label>
-            <input type="password" className="input" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+            <PasswordInput value={confirm} onChange={setConfirm} autoComplete="new-password" required />
           </div>
           {error && <p className="text-sm text-error">{error}</p>}
           <button type="submit" disabled={loading} className="btn-primary w-full">

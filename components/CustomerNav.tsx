@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import Icon from "./Icon";
 import Wordmark from "./Wordmark";
 import ThemeToggle from "./theme/ThemeToggle";
+import AnnouncementBar from "./AnnouncementBar";
 
 const links = [
   { href: "/home", label: "الرئيسية", icon: "market" as const },
   { href: "/orders", label: "طلباتي", icon: "orders" as const },
   { href: "/cart", label: "السلة", icon: "cart" as const },
-  { href: "/debts", label: "المديونية", icon: "debt" as const },
   { href: "/profile", label: "حسابي", icon: "account" as const }
 ];
 
@@ -34,7 +34,7 @@ export default function CustomerNav() {
                     key={l.href}
                     href={l.href}
                     className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm transition-all duration-base ${
-                      active ? "glow-accent is-active bg-accent-soft text-accent-strong" : "text-textSecondary hover:bg-surfaceElevated"
+                      active ? "bg-accent-soft text-accent-strong" : "text-textSecondary hover:bg-surfaceElevated"
                     }`}
                   >
                     <Icon name={l.icon} size={16} />
@@ -46,6 +46,7 @@ export default function CustomerNav() {
           </div>
         </div>
       </header>
+      <AnnouncementBar />
 
       {/* Bottom Tab Bar: للموبايل فقط — Touch-first */}
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-borderc bg-surface/95 backdrop-blur md:hidden">

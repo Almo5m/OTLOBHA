@@ -5,6 +5,9 @@ import Image from "next/image";
 import Icon from "@/components/Icon";
 import IconBadge from "@/components/IconBadge";
 import PopularProductsSection from "@/components/PopularProductsSection";
+import Footer from "@/components/Footer";
+import OnboardingTutorial from "@/components/OnboardingTutorial";
+import HeroIllustration from "@/components/illustrations/HeroIllustration";
 
 function iconForCategory(name: string): Parameters<typeof Icon>[0]["name"] {
   if (name.includes("سوق")) return "market";
@@ -13,6 +16,12 @@ function iconForCategory(name: string): Parameters<typeof Icon>[0]["name"] {
   if (name.includes("خضر")) return "vegetables";
   return "products";
 }
+
+const HOW_IT_WORKS = [
+  { icon: "cart" as const, title: "اختار احتياجاتك", desc: "من الكتالوج أو حتى منتج مش موجود عندنا" },
+  { icon: "agent" as const, title: "نشتريها فعليًا", desc: "مندوبنا بيشتري المنتجات بنفسه بالسعر الحقيقي" },
+  { icon: "delivery" as const, title: "توصلك لباب البيت", desc: "دفع عند الاستلام، وتقدر تتابع طلبك أول بأول" }
+];
 
 export default async function HomePage() {
   const supabase = createServerSupabase();
@@ -26,24 +35,62 @@ export default async function HomePage() {
   const { data: settingsRows } = await supabase
     .from("platform_settings")
     .select("key,value")
-    .in("key", ["service_area_label", "platform_mode", "maintenance_message", "outside_working_hours_message"]);
+    .in("key", ["service_area_label", "platform_mode", "maintenance_message", "home_banner_image_url"]);
 
   const settings = Object.fromEntries((settingsRows ?? []).map((r) => [r.key, r.value]));
 
   return (
     <>
       <CustomerNav />
-      <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:max-w-4xl md:pb-6 lg:max-w-5xl">
-        <div className="alert alert-info mb-6 flex items-center gap-2">
-          <Icon name="location" size={16} />
-          منطقة الخدمة الحالية: <strong className="numeric">{settings.service_area_label ?? "المنيب – مصر"}</strong>
-        </div>
-
+      <OnboardingTutorial />
+      <main className="mx-auto max-w-2xl px-4 pb-24 pt-6 md:max-w-4xl md:pb-10 lg:max-w-5xl">
         {settings.platform_mode === "maintenance" && (
           <div className="alert alert-warning mb-6">{settings.maintenance_message}</div>
         )}
 
-        <h1 className="mb-4 text-xl font-bold">التصنيفات</h1>
+        {settings.home_banner_image_url && (
+          <div className="mb-8 overflow-hidden rounded-lg">
+            <Image
+              src={settings.home_banner_image_url}
+              alt="اطلبها"
+              width={800}
+              height={300}
+              className="h-auto w-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد */}
+        <section className="mb-10 flex flex-col items-center gap-6 text-center md:flex-row-reverse md:text-right">
+          <HeroIllustration className="h-40 w-auto shrink-0 md:h-52" />
+          <div>
+            <span className="badge badge-neutral mb-3 inline-flex">
+              <Icon name="location" size={13} />
+              <span className="numeric">{settings.service_area_label ?? "المنيب – مصر"}</span>
+            </span>
+            <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
+              اطلب اللي محتاجه،<br className="hidden sm:block" /> إحنا نجيبهولك لباب البيت
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-textSecondary sm:text-base">
+              من السوق للصيدلية للخضار — تختار، ومندوبنا يشتريها فعليًا ويوصّلها لباب بيتك.
+            </p>
+          </div>
+        </section>
+
+        {/* كيف تعمل الخدمة — 3 خطوات بسيطة */}
+        <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {HOW_IT_WORKS.map((step, i) => (
+            <div key={i} className="flex items-start gap-3 sm:flex-col sm:items-center sm:text-center">
+              <IconBadge name={step.icon} tone={i === 1 ? "accent" : "neutral"} />
+              <div className="sm:mt-1">
+                <p className="font-medium">{step.title}</p>
+                <p className="mt-0.5 text-xs text-textSecondary">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <h2 className="mb-4 text-xl font-bold">تصفّح التصنيفات</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {(categories ?? []).map((c) => (
             <Link
@@ -54,7 +101,7 @@ export default async function HomePage() {
               {c.image_url ? (
                 <Image src={c.image_url} alt={c.name} width={64} height={64} className="rounded-md object-cover" />
               ) : (
-                <IconBadge name={iconForCategory(c.name)} tone="accent" size="lg" />
+                <IconBadge name={iconForCategory(c.name)} size="lg" />
               )}
               <span className="font-medium">{c.name}</span>
             </Link>
@@ -70,6 +117,7 @@ export default async function HomePage() {
 
         <PopularProductsSection />
       </main>
+      <Footer />
     </>
   );
 }

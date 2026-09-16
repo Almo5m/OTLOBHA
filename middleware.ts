@@ -9,6 +9,13 @@ const ROLE_HOME: Record<string, string> = {
   super_admin: "/admin/dashboard"
 };
 
+// المسارات دي مفتوحة تمامًا للزائر بدون تسجيل دخول — تصفّح حر للموقع
+const PUBLIC_PREFIXES = ["/", "/home", "/categories", "/products", "/cart", "/legal"];
+
+function isPublicRoute(pathname: string) {
+  return PUBLIC_PREFIXES.some((p) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/")));
+}
+
 function pathBelongsToRole(pathname: string, role: string) {
   if (pathname.startsWith("/admin")) return role === "business_admin" || role === "super_admin";
   if (pathname.startsWith("/super")) return role === "super_admin";
@@ -42,11 +49,15 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/reset-password");
-  const isPublicRoute = pathname === "/" || pathname.startsWith("/categories") || pathname.startsWith("/products") || pathname.startsWith("/reset-password");
+  const publicRoute = isPublicRoute(pathname);
 
   if (!user) {
-    if (isAuthRoute || isPublicRoute) return response;
-    return NextResponse.redirect(new URL("/login", request.url));
+    if (isAuthRoute || publicRoute) return response;
+    // مسار محمي (مثل /checkout أو /orders) وزائر مش مسجّل دخول:
+    // نوجّهه لتسجيل الدخول مع الاحتفاظ بمكانه عشان يرجعله بعد الدخول مباشرة
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("returnTo", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const { data: profile } = await supabase
@@ -66,7 +77,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(ROLE_HOME[profile.role] ?? "/home", request.url));
   }
 
-  if (!pathBelongsToRole(pathname, profile.role) && !isPublicRoute) {
+  if (!pathBelongsToRole(pathname, profile.role) && !publicRoute) {
     return NextResponse.redirect(new URL(ROLE_HOME[profile.role] ?? "/home", request.url));
   }
 

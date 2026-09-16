@@ -14,7 +14,7 @@ export default async function DebtsPage() {
     <>
       <CustomerNav />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:max-w-3xl md:pb-6 lg:max-w-4xl">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="debt" size={20} className="text-accent" /> المديونية</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="debt" size={20} className="text-textSecondary" /> المديونية</h1>
 
         <div className="card mb-4">
           <p className="text-sm text-textSecondary">الإجمالي المستحق حاليًا</p>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomerNav from "@/components/CustomerNav";
 import Icon from "@/components/Icon";
+import EmptyState from "@/components/EmptyState";
+import IconBadge from "@/components/IconBadge";
 import { useCartStore } from "@/lib/cart-store";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect } from "react";
@@ -47,25 +49,33 @@ export default function CartPage() {
     <>
       <CustomerNav />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-6">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="cart" size={20} className="text-accent" /> السلة</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="cart" size={20} className="text-textSecondary" /> السلة</h1>
 
-        <div className="space-y-3">
-          {items.map((item) => (
-            <div key={item.key} className="card flex items-center gap-3">
-              <div className="flex-1">
-                <p className="font-medium">{item.type === "manual" ? item.manualName : "منتج من الكتالوج"}</p>
-                <p className="text-xs text-textSecondary">{item.unitName} {item.comment ? `— ${item.comment}` : ""}</p>
+        {items.length > 0 && (
+          <div className="space-y-3">
+            {items.map((item) => (
+              <div key={item.key} className="card flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="font-medium">{item.type === "manual" ? item.manualName : "منتج من الكتالوج"}</p>
+                  <p className="text-xs text-textSecondary">{item.unitName} {item.comment ? `— ${item.comment}` : ""}</p>
+                </div>
+                <input
+                  type="number" min={0.5} step="0.5" value={item.quantity}
+                  onChange={(e) => updateQuantity(item.key, Number(e.target.value))}
+                  className="w-16 rounded-sm border border-line px-2 py-1.5 text-center text-sm"
+                />
+                <button onClick={() => removeItem(item.key)} className="text-sm text-error">حذف</button>
               </div>
-              <input
-                type="number" min={0.5} step="0.5" value={item.quantity}
-                onChange={(e) => updateQuantity(item.key, Number(e.target.value))}
-                className="w-16 rounded-sm border border-line px-2 py-1.5 text-center text-sm"
-              />
-              <button onClick={() => removeItem(item.key)} className="text-sm text-error">حذف</button>
-            </div>
-          ))}
-          {items.length === 0 && <p className="text-sm text-textSecondary">السلة فارغة حاليًا.</p>}
-        </div>
+            ))}
+          </div>
+        )}
+        {items.length === 0 && (
+          <EmptyState
+            illustration={<IconBadge name="cart" size="lg" />}
+            title="السلة فاضية دلوقتي"
+            description="ارجع للتصنيفات واختار اللي محتاجه"
+          />
+        )}
 
         <div className="card mt-6">
           <h2 className="mb-3 font-medium">طلب منتج غير موجود في الكتالوج</h2>

@@ -17,7 +17,7 @@ export default async function AdminCategoriesPage() {
       <AdminNav />
       <main className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="market" size={20} className="text-accent" /> التصنيفات
+          <Icon name="market" size={20} className="text-textSecondary" /> التصنيفات
         </h1>
         <p className="mb-4 text-xs text-textSecondary">
           إضافة تصنيف جديد صلاحية Super Admin فقط. الصورة والترتيب والتفعيل يمكن تعديلهم مباشرة من القائمة تحت.

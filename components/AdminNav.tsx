@@ -5,18 +5,28 @@ import AdminNavLink from "./AdminNavLink";
 import ThemeToggle from "./theme/ThemeToggle";
 import Icon from "./Icon";
 
-const baseLinks: { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"] }[] = [
-  { href: "/admin/dashboard", label: "الرئيسية", icon: "dashboard" },
-  { href: "/admin/orders", label: "الطلبات", icon: "orders" },
-  { href: "/admin/customers", label: "العملاء", icon: "customer" },
-  { href: "/admin/products", label: "المنتجات", icon: "products" },
-  { href: "/admin/categories", label: "التصنيفات", icon: "market" },
-  { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
-  { href: "/admin/debts", label: "الديون", icon: "debt" },
-  { href: "/admin/complaints", label: "الشكاوى", icon: "complaints" },
-  { href: "/admin/agents", label: "المندوبين", icon: "agent" },
-  { href: "/admin/reports", label: "التقارير", icon: "reports" },
-  { href: "/admin/settings", label: "الإعدادات", icon: "settings" }
+// مجموعات منطقية بدل صف واحد مسطّح فيه كل الصفحات بنفس الأهمية —
+// كل مجموعة مفصولة بخط رفيع بدل ما تبقى كل الروابط متساوية بصريًا
+const navGroups: { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"] }[][] = [
+  [{ href: "/admin/dashboard", label: "الرئيسية", icon: "dashboard" }],
+  [
+    { href: "/admin/orders", label: "الطلبات", icon: "orders" },
+    { href: "/admin/customers", label: "العملاء", icon: "customer" },
+    { href: "/admin/agents", label: "المندوبين", icon: "agent" }
+  ],
+  [
+    { href: "/admin/products", label: "المنتجات", icon: "products" },
+    { href: "/admin/categories", label: "التصنيفات", icon: "market" }
+  ],
+  [
+    { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
+    { href: "/admin/debts", label: "الديون", icon: "debt" },
+    { href: "/admin/reports", label: "التقارير", icon: "reports" }
+  ],
+  [
+    { href: "/admin/complaints", label: "الشكاوى", icon: "complaints" },
+    { href: "/admin/settings", label: "الإعدادات", icon: "settings" }
+  ]
 ];
 
 const superLinks: { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"] }[] = [
@@ -47,8 +57,13 @@ export default async function AdminNav() {
           </div>
         </div>
 
-        <nav className="scrollbar-none -mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
-          {baseLinks.map((l) => <AdminNavLink key={l.href} href={l.href} label={l.label} iconName={l.icon} />)}
+        <nav className="scrollbar-none -mx-1 flex items-center gap-1 overflow-x-auto px-1 pb-1">
+          {navGroups.map((group, gi) => (
+            <div key={gi} className="flex shrink-0 items-center gap-1">
+              {gi > 0 && <span className="mx-1 h-5 w-px shrink-0 bg-borderc" aria-hidden="true" />}
+              {group.map((l) => <AdminNavLink key={l.href} href={l.href} label={l.label} iconName={l.icon} />)}
+            </div>
+          ))}
         </nav>
 
         {isSuperAdmin && (

@@ -1,8 +1,9 @@
 import Icon from "./Icon";
 
-type Tone = "accent" | "brand" | "success" | "warning" | "error" | "info";
+type Tone = "neutral" | "accent" | "brand" | "success" | "warning" | "error" | "info";
 
 const TONE_BG: Record<Tone, string> = {
+  neutral: "bg-surfaceElevated",
   accent: "bg-accent",
   brand: "bg-brand",
   success: "bg-success",
@@ -14,6 +15,7 @@ const TONE_BG: Record<Tone, string> = {
 // "brand" الآن لون Ink المحايد (أسود في الفاتح/أبيض في الغامق) فلازم نص الأيقونة
 // يتبع inkContrast بدل الأبيض الثابت، وإلا يختفي في الـDark Mode
 const TONE_TEXT: Record<Tone, string> = {
+  neutral: "text-textPrimary",
   accent: "text-white",
   brand: "text-inkContrast",
   success: "text-white",
@@ -23,25 +25,23 @@ const TONE_TEXT: Record<Tone, string> = {
 };
 
 /**
- * شارة أيقونة بخلفية لونية أساسية صريحة (Solid) بدل الخلفيات الباهتة —
- * تُستخدم للعناصر البارزة (بطاقات الإحصائيات، التصنيفات، عناصر القوائم)
- * مع الحفاظ على لون واحد مسيطر (Accent) في أغلب الحالات لتجنّب Rainbow UI.
+ * شارة أيقونة — الافتراضي "neutral" (خلفية محايدة، أيقونة بلون النص) عشان
+ * الألوان القوية متتكررش في كل مكان. استخدم tone="accent" أو غيره بس في
+ * الحالات اللي فعلاً محتاجة تمييز (زي التصنيفات أو حالة نشطة مهمة).
  */
 export default function IconBadge({
-  name, tone = "accent", size = "md", glow = false
+  name, tone = "neutral", size = "md"
 }: {
   name: Parameters<typeof Icon>[0]["name"];
   tone?: Tone;
   size?: "sm" | "md" | "lg";
-  glow?: boolean;
 }) {
   const boxSize = size === "sm" ? "h-9 w-9" : size === "lg" ? "h-14 w-14" : "h-11 w-11";
   const iconSize = size === "sm" ? 16 : size === "lg" ? 26 : 20;
+  const border = tone === "neutral" ? "border border-borderc" : "";
 
   return (
-    <div
-      className={`flex ${boxSize} shrink-0 items-center justify-center rounded-lg ${TONE_BG[tone]} ${TONE_TEXT[tone]} shadow-sm ${glow ? "glow-accent is-active" : ""}`}
-    >
+    <div className={`flex ${boxSize} shrink-0 items-center justify-center rounded-lg ${TONE_BG[tone]} ${TONE_TEXT[tone]} ${border}`}>
       <Icon name={name} size={iconSize} />
     </div>
   );

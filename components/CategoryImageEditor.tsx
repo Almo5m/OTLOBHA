@@ -35,7 +35,7 @@ export default function CategoryImageEditor({ categoryId, imageUrl }: { category
       {imageUrl ? (
         <Image src={imageUrl} alt="" width={48} height={48} className="rounded-md object-cover" />
       ) : (
-        <IconBadge name="market" tone="accent" size="md" />
+        <IconBadge name="market" size="md" />
       )}
       <span className="absolute inset-0 flex items-center justify-center rounded-md bg-black/50 text-[10px] text-white opacity-0 transition-opacity duration-fast group-hover:opacity-100">
         تغيير

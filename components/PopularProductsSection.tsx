@@ -41,7 +41,7 @@ export default function PopularProductsSection() {
                 {p.image_url ? (
                   <Image src={p.image_url} alt={p.name} width={56} height={56} className="rounded-md object-cover" />
                 ) : (
-                  <IconBadge name="products" tone="accent" />
+                  <IconBadge name="products" />
                 )}
                 <p className="line-clamp-2 text-sm font-medium">{p.name}</p>
                 <p className="numeric text-xs text-textSecondary">{p.last_known_price} ج.م / {p.unit_name}</p>

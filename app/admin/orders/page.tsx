@@ -19,7 +19,7 @@ export default async function AdminOrdersPage() {
       <AdminNav />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="orders" size={20} className="text-accent" /> الطلبات
+          <Icon name="orders" size={20} className="text-textSecondary" /> الطلبات
         </h1>
 
         {(orders ?? []).length === 0 ? (

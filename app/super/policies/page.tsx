@@ -13,7 +13,7 @@ export default async function PoliciesPage() {
     <>
       <AdminNav />
       <main className="mx-auto max-w-3xl px-4 py-6">
-        <h1 className="mb-2 flex items-center gap-2 text-xl font-bold"><Icon name="invoice" size={20} className="text-accent" /> الشروط والسياسات</h1>
+        <h1 className="mb-2 flex items-center gap-2 text-xl font-bold"><Icon name="invoice" size={20} className="text-textSecondary" /> الشروط والسياسات</h1>
 
         {!hasTerms && (
           <div className="mb-4 alert alert-error">

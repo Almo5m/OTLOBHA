@@ -35,7 +35,7 @@ export default async function AdminReportsPage() {
       <AdminNav />
       <main className="mx-auto max-w-4xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="reports" size={20} className="text-accent" /> التقارير
+          <Icon name="reports" size={20} className="text-textSecondary" /> التقارير
         </h1>
 
         <div className="grid gap-3 lg:grid-cols-2">

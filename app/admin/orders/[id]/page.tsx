@@ -2,6 +2,11 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import AdminOrderActions from "@/components/AdminOrderActions";
 import WhatsAppMessageButton from "@/components/WhatsAppMessageButton";
+import OrderItemsList from "@/components/OrderItemsList";
+import InvoiceCard from "@/components/InvoiceCard";
+import OrderTimeline from "@/components/OrderTimeline";
+import PaymentProofPanel from "@/components/PaymentProofPanel";
+import Icon from "@/components/Icon";
 
 const EVENT_BY_STATUS: Record<string, { key: string; label: string }> = {
   accepted: { key: "order_accepted", label: "إرسال رسالة: تم قبول الطلب" },
@@ -27,6 +32,9 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
   const { data: invoice } = await supabase
     .from("invoices").select("*").eq("order_id", params.id)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const { data: paymentProof } = order?.payment_method !== "cash"
+    ? await supabase.from("payment_proofs").select("*").eq("order_id", params.id).maybeSingle()
+    : { data: null };
 
   if (!order) return <main className="p-6">الطلب غير موجود.</main>;
 
@@ -38,36 +46,31 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
   return (
     <>
       <AdminNav />
-      <main className="mx-auto max-w-3xl px-4 py-6">
+      <main className="mx-auto max-w-4xl px-4 py-6">
         <h1 className="mb-1 text-xl font-bold">طلب {order.order_number}</h1>
-        <p className="mb-4 text-sm text-textSecondary">{customer?.full_name} — {customer?.phone}</p>
+        <p className="mb-4 text-sm text-textSecondary">{customer?.full_name} — <span className="numeric">{customer?.phone}</span></p>
 
-        <div className="card mb-4 text-sm">
-          <p><strong>العنوان:</strong> {order.delivery_address_snapshot?.full_address_text}</p>
-          <p><strong>طريقة الدفع:</strong> {order.payment_method}</p>
-          {order.assigned_agent_id && <p><strong>المندوب المُسند:</strong> يمكن مراجعته من قسم المندوبين</p>}
+        <div className="mb-4">
+          <OrderTimeline status={order.status} />
         </div>
 
-        <div className="card mb-4">
-          <h2 className="mb-3 font-medium">الأصناف</h2>
-          <div className="space-y-2 text-sm">
-            {(items ?? []).map((it: any) => (
-              <div key={it.id} className="flex justify-between border-b border-line/50 pb-2">
-                <span>{it.products?.name ?? it.manual_name} — {it.quantity} {it.sale_units?.name}</span>
-                <span>{it.is_available === false ? "غير متوفر" : it.actual_price != null ? `${it.actual_price} ج.م` : "—"}</span>
-              </div>
-            ))}
-          </div>
+        <div className="card mb-4 flex items-start gap-2 text-sm">
+          <Icon name="location" size={16} className="mt-0.5 shrink-0 text-textSecondary" />
+          <p>{order.delivery_address_snapshot?.full_address_text}</p>
         </div>
 
-        {invoice && (
-          <div className="card mb-4 text-sm">
-            <h2 className="mb-2 font-medium">الفاتورة {invoice.invoice_number} ({invoice.status})</h2>
-            <p>الإجمالي: {invoice.grand_total} ج.م — الدفع: {invoice.payment_status}</p>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <OrderItemsList items={(items as any) ?? []} />
+          {invoice && <InvoiceCard invoice={{ ...invoice, payment_method: order.payment_method }} orderNumber={order.order_number} />}
+        </div>
+
+        {paymentProof && (
+          <div className="mb-4">
+            <PaymentProofPanel proof={paymentProof as any} />
           </div>
         )}
 
-        <div className="mb-4">
+        <div className="my-4">
           <AdminOrderActions orderId={order.id} status={order.status} draftInvoiceId={draftInvoiceId} />
         </div>
 

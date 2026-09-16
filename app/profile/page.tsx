@@ -5,6 +5,7 @@ import CustomerNav from "@/components/CustomerNav";
 import Icon from "@/components/Icon";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const supabase = createClient();
@@ -14,6 +15,7 @@ export default function ProfilePage() {
   const [fullName, setFullName] = useState("");
   const [newAddress, setNewAddress] = useState("");
   const [saved, setSaved] = useState(false);
+  const [outstandingDebt, setOutstandingDebt] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -24,6 +26,8 @@ export default function ProfilePage() {
       setFullName(data?.full_name ?? "");
       const { data: addrs } = await supabase.from("addresses").select("*").eq("customer_id", user.id);
       setAddresses(addrs ?? []);
+      const { data: debts } = await supabase.from("debts").select("amount,status").eq("customer_id", user.id).neq("status", "settled");
+      setOutstandingDebt((debts ?? []).reduce((s, d) => s + Number(d.amount), 0));
     })();
   }, []);
 
@@ -54,7 +58,7 @@ export default function ProfilePage() {
     <>
       <CustomerNav />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-6">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="account" size={20} className="text-accent" /> حسابي</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="account" size={20} className="text-textSecondary" /> حسابي</h1>
 
         <div className="card mb-4 space-y-3">
           <div>
@@ -81,6 +85,15 @@ export default function ProfilePage() {
             <button onClick={handleAddAddress} className="btn-secondary shrink-0">إضافة</button>
           </div>
         </div>
+
+        <Link href="/debts" className="card mb-4 flex items-center justify-between text-sm">
+          <span className="flex items-center gap-2 text-textSecondary">
+            <Icon name="debt" size={16} /> المديونية
+          </span>
+          <span className="numeric font-medium">
+            {outstandingDebt > 0 ? `${outstandingDebt.toFixed(2)} ج.م` : "لا يوجد"}
+          </span>
+        </Link>
 
         <button onClick={handleLogout} className="text-sm text-error">تسجيل الخروج</button>
       </main>

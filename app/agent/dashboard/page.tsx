@@ -40,7 +40,7 @@ export default async function AgentDashboard() {
             {(orders ?? []).map((o: any) => (
               <Link key={o.id} href={`/agent/orders/${o.id}`} className="card card-interactive flex items-center justify-between animate-fadeIn">
                 <div className="flex items-center gap-3">
-                  <IconBadge name={o.status === "shopping" || o.status === "invoice_preparation" ? "cart" : "delivery"} tone="accent" size="sm" />
+                  <IconBadge name={o.status === "shopping" || o.status === "invoice_preparation" ? "cart" : "delivery"} size="sm" />
                   <div>
                     <p className="numeric font-medium">{o.order_number}</p>
                     <p className="text-xs text-textSecondary">{o.delivery_address_snapshot?.full_address_text}</p>

@@ -21,7 +21,7 @@ export default async function CommissionPage() {
     <>
       <AdminNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="wallet" size={20} className="text-accent" /> العمولة</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="wallet" size={20} className="text-textSecondary" /> العمولة</h1>
 
         <div className="card mb-4">
           <p className="text-sm text-textSecondary">إجمالي العمولة المستحقة حاليًا</p>

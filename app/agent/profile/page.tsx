@@ -18,7 +18,7 @@ export default function AgentProfilePage() {
     <>
       <AgentNav />
       <main className="mx-auto max-w-2xl px-4 py-6">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="account" size={20} className="text-accent" /> حسابي</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="account" size={20} className="text-textSecondary" /> حسابي</h1>
         <button onClick={handleLogout} className="text-sm text-error">تسجيل الخروج</button>
       </main>
     </>

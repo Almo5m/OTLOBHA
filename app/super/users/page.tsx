@@ -16,7 +16,7 @@ export default async function UsersManagementPage() {
       <AdminNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-2 flex items-center gap-2 text-xl font-bold">
-          <Icon name="account" size={20} className="text-accent" /> إدارة المستخدمين والأدوار
+          <Icon name="account" size={20} className="text-textSecondary" /> إدارة المستخدمين والأدوار
         </h1>
         <p className="mb-4 text-sm text-textSecondary">
           لإنشاء حساب مندوب أو إداري جديد: اطلب منه التسجيل عاديًا من صفحة "إنشاء حساب"، ثم غيّر دوره من هنا.

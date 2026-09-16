@@ -20,7 +20,7 @@ export default async function AdminCustomersPage() {
       <AdminNav />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="customer" size={20} className="text-accent" /> العملاء
+          <Icon name="customer" size={20} className="text-textSecondary" /> العملاء
         </h1>
 
         {(customers ?? []).length === 0 ? (

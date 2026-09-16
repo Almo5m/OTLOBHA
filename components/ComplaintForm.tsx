@@ -37,7 +37,7 @@ export default function ComplaintForm() {
 
   return (
     <>
-      <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="complaints" size={20} className="text-accent" /> تقديم شكوى</h1>
+      <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="complaints" size={20} className="text-textSecondary" /> تقديم شكوى</h1>
       <div className="card space-y-4">
         <div>
           <label className="label">نوع الشكوى</label>

@@ -19,7 +19,7 @@ export default async function AdminProductsPage() {
       <AdminNav />
       <main className="mx-auto max-w-4xl px-4 py-6 lg:max-w-5xl">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="products" size={20} className="text-accent" /> المنتجات
+          <Icon name="products" size={20} className="text-textSecondary" /> المنتجات
         </h1>
 
         <ProductForm categories={categories ?? []} units={units ?? []} />
@@ -30,7 +30,7 @@ export default async function AdminProductsPage() {
               {p.image_url ? (
                 <Image src={p.image_url} alt={p.name} width={44} height={44} className="rounded-md object-cover" />
               ) : (
-                <IconBadge name="products" tone="accent" size="sm" />
+                <IconBadge name="products" size="sm" />
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{p.name}</p>

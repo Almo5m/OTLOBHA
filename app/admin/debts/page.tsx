@@ -2,6 +2,9 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import SettleDebtButton from "@/components/SettleDebtButton";
 import { DebtStatusBadge } from "@/components/Badge";
+import Icon from "@/components/Icon";
+import EmptyState from "@/components/EmptyState";
+import SuccessIllustration from "@/components/illustrations/SuccessIllustration";
 
 export default async function AdminDebtsPage() {
   const supabase = createServerSupabase();
@@ -10,13 +13,20 @@ export default async function AdminDebtsPage() {
     .select("*, users!debts_customer_id_fkey(full_name,phone), debt_settlements(amount_paid)")
     .order("created_at", { ascending: false });
 
+  const list = debts ?? [];
+
   return (
     <>
       <AdminNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <h1 className="mb-4 text-xl font-bold">الديون</h1>
+        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
+          <Icon name="debt" size={20} className="text-textSecondary" /> الديون
+        </h1>
+        {list.length === 0 ? (
+          <EmptyState illustration={<SuccessIllustration />} title="مفيش ديون مسجّلة حاليًا" description="كل الحسابات متوازنة 👍" />
+        ) : (
         <div className="space-y-2">
-          {(debts ?? []).map((d: any) => {
+          {list.map((d: any) => {
             const paid = (d.debt_settlements ?? []).reduce((s: number, x: any) => s + Number(x.amount_paid), 0);
             const remaining = Number(d.amount) - paid;
             return (
@@ -32,8 +42,8 @@ export default async function AdminDebtsPage() {
               </div>
             );
           })}
-          {(debts ?? []).length === 0 && <p className="text-sm text-textSecondary">لا توجد ديون مسجّلة.</p>}
         </div>
+        )}
       </main>
     </>
   );

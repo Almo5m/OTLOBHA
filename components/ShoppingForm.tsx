@@ -12,6 +12,8 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDecline, setShowDecline] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
 
   async function saveItem(itemId: string) {
     const s = state[itemId];
@@ -31,6 +33,16 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
     setLoading(true);
     setError(null);
     const { error } = await supabase.rpc("submit_for_invoice", { p_order_id: orderId });
+    setLoading(false);
+    if (error) { setError(error.message); return; }
+    router.push("/agent/dashboard");
+  }
+
+  async function handleDecline() {
+    if (!declineReason.trim()) { setError("يجب كتابة سبب مقنع لرفض الطلب"); return; }
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.rpc("decline_shopping_assignment", { p_order_id: orderId, p_reason: declineReason });
     setLoading(false);
     if (error) { setError(error.message); return; }
     router.push("/agent/dashboard");
@@ -73,6 +85,22 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
       <button onClick={finishShopping} disabled={!allResolved || loading} className="btn-primary w-full">
         إنهاء الشراء وتجهيز الفاتورة
       </button>
+
+      <div className="card">
+        {!showDecline ? (
+          <button onClick={() => setShowDecline(true)} className="text-sm text-error">
+            مش قادر أنفّذ الطلب ده
+          </button>
+        ) : (
+          <div className="space-y-2">
+            <textarea className="input" placeholder="اكتب سبب مقنع لرفض الطلب" value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)} />
+            <button onClick={handleDecline} disabled={loading} className="btn-secondary">
+              تأكيد الرفض وإعادة الطلب لنظام التعيين
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

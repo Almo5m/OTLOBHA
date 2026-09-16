@@ -6,6 +6,7 @@ import CustomerNav from "@/components/CustomerNav";
 import { useCartStore } from "@/lib/cart-store";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
+import PaymentProofUpload from "@/components/PaymentProofUpload";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function CheckoutPage() {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [proof, setProof] = useState({ imageUrl: "", senderName: "", senderNumber: "" });
 
   useEffect(() => {
     supabase.from("addresses").select("*").then(({ data }) => {
@@ -40,6 +42,10 @@ export default function CheckoutPage() {
     if (items.length === 0) { setError("السلة فارغة"); return; }
     if (!agreed) { setError("يجب الموافقة على الشروط والسياسات أولاً"); return; }
     if (!addressId && !customAddress.trim()) { setError("يجب تحديد عنوان التسليم"); return; }
+    if (paymentMethod !== "cash" && !proof.imageUrl) {
+      setError("يجب رفع صورة إثبات التحويل لإتمام الطلب بهذه الطريقة");
+      return;
+    }
 
     setLoading(true);
     const payload = items.map((i) => ({
@@ -56,7 +62,10 @@ export default function CheckoutPage() {
       p_address_id: useCustom ? null : addressId,
       p_custom_address_text: useCustom ? customAddress : null,
       p_payment_method: paymentMethod,
-      p_policy_id: policyId
+      p_policy_id: policyId,
+      p_payment_proof_image_url: paymentMethod !== "cash" ? proof.imageUrl : null,
+      p_payment_sender_name: paymentMethod !== "cash" ? proof.senderName : null,
+      p_payment_sender_number: paymentMethod !== "cash" ? proof.senderNumber : null
     });
 
     setLoading(false);
@@ -95,7 +104,7 @@ export default function CheckoutPage() {
         </div>
 
         <div className="card mb-4">
-          <h2 className="mb-3 font-medium">طريقة الدفع (عند التسليم)</h2>
+          <h2 className="mb-3 font-medium">طريقة الدفع</h2>
           <div className="flex gap-3 text-sm">
             {[["cash", "كاش"], ["wallet", "محفظة إلكترونية"], ["instapay", "InstaPay"]].map(([val, label]) => (
               <label key={val} className="flex items-center gap-1.5">
@@ -106,6 +115,10 @@ export default function CheckoutPage() {
             ))}
           </div>
         </div>
+
+        {paymentMethod !== "cash" && (
+          <PaymentProofUpload method={paymentMethod} onChange={setProof} />
+        )}
 
         {disclaimer && (
           <div className="alert alert-info mb-4 flex items-start gap-2">

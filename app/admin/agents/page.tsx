@@ -29,7 +29,7 @@ export default async function AdminAgentsPage() {
       <AdminNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="agent" size={20} className="text-accent" /> المندوبين
+          <Icon name="agent" size={20} className="text-textSecondary" /> المندوبين
         </h1>
 
         {rows.length === 0 ? (
