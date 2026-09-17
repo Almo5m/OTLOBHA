@@ -7,6 +7,7 @@ import IconBadge from "@/components/IconBadge";
 import PopularProductsSection from "@/components/PopularProductsSection";
 import Footer from "@/components/Footer";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
+import PerksAlert from "@/components/PerksAlert";
 import HeroIllustration from "@/components/illustrations/HeroIllustration";
 
 function iconForCategory(name: string): Parameters<typeof Icon>[0]["name"] {
@@ -16,6 +17,14 @@ function iconForCategory(name: string): Parameters<typeof Icon>[0]["name"] {
   if (name.includes("خضر")) return "vegetables";
   return "products";
 }
+
+// نمط Bento بأحجام متنوعة بدل شبكة موحّدة — بيتكرر كل 4 عناصر
+const BENTO_SPANS = [
+  "col-span-2 row-span-2",
+  "col-span-2 row-span-1",
+  "col-span-1 row-span-1",
+  "col-span-1 row-span-1"
+];
 
 const HOW_IT_WORKS = [
   { icon: "cart" as const, title: "اختار احتياجاتك", desc: "من الكتالوج أو حتى منتج مش موجود عندنا" },
@@ -90,22 +99,34 @@ export default async function HomePage() {
           ))}
         </section>
 
+        <PerksAlert />
+
         <h2 className="mb-4 text-xl font-bold">تصفّح التصنيفات</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {(categories ?? []).map((c) => (
-            <Link
-              key={c.id}
-              href={`/categories/${c.id}`}
-              className="card card-interactive flex flex-col items-center gap-2 text-center"
-            >
-              {c.image_url ? (
-                <Image src={c.image_url} alt={c.name} width={64} height={64} className="rounded-md object-cover" />
-              ) : (
-                <IconBadge name={iconForCategory(c.name)} size="lg" />
-              )}
-              <span className="font-medium">{c.name}</span>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 auto-rows-[88px] gap-3 sm:grid-cols-4 sm:auto-rows-[110px]">
+          {(categories ?? []).map((c, i) => {
+            const span = BENTO_SPANS[i % 4];
+            const isBig = span.includes("col-span-2") && span.includes("row-span-2");
+            return (
+              <Link
+                key={c.id}
+                href={`/categories/${c.id}`}
+                className={`card card-interactive relative flex flex-col items-center justify-center gap-2 overflow-hidden p-3 text-center ${span}`}
+              >
+                {c.image_url ? (
+                  <>
+                    <Image src={c.image_url} alt={c.name} fill className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                    <span className="relative z-10 mt-auto font-bold text-white">{c.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <IconBadge name={iconForCategory(c.name)} size={isBig ? "lg" : "md"} />
+                    <span className="font-medium">{c.name}</span>
+                  </>
+                )}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="mt-8">

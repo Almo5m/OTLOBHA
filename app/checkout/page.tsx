@@ -7,6 +7,7 @@ import { useCartStore } from "@/lib/cart-store";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import PaymentProofUpload from "@/components/PaymentProofUpload";
+import PerksAlert from "@/components/PerksAlert";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -79,6 +80,7 @@ export default function CheckoutPage() {
     <>
       <CustomerNav />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-6">
+        <PerksAlert />
         <h1 className="mb-4 text-xl font-bold">إتمام الطلب</h1>
 
         <div className="card mb-4">

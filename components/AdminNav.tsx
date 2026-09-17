@@ -21,6 +21,8 @@ const navGroups: { href: string; label: string; icon: Parameters<typeof Icon>[0]
   [
     { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
     { href: "/admin/debts", label: "الديون", icon: "debt" },
+    { href: "/admin/discounts", label: "الخصومات", icon: "wallet" },
+    { href: "/admin/promotions", label: "العروض", icon: "rating" },
     { href: "/admin/reports", label: "التقارير", icon: "reports" }
   ],
   [
