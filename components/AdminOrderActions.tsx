@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminOrderActions({
-  orderId, status, draftInvoiceId, assignedAgentId
-}: { orderId: string; status: string; draftInvoiceId: string | null; assignedAgentId?: string | null }) {
+  orderId, status, draftInvoiceId, assignedAgentId, currentUserId
+}: { orderId: string; status: string; draftInvoiceId: string | null; assignedAgentId?: string | null; currentUserId?: string | null }) {
   const supabase = createClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,15 @@ export default function AdminOrderActions({
           <span>الطلب لسه مالوش مندوب متعيّن — على الأغلب مفيش مندوب متاح دلوقتي.</span>
           <button disabled={loading} onClick={() => run(() => supabase.rpc("admin_retry_agent_assignment", { p_order_id: orderId }))}
             className="btn-secondary text-xs">إعادة محاولة تعيين مندوب</button>
+          <button disabled={loading} onClick={() => run(() => supabase.rpc("admin_claim_order", { p_order_id: orderId }))}
+            className="btn-primary text-xs">أنا هوصّله بنفسي</button>
         </div>
+      )}
+
+      {assignedAgentId && currentUserId && assignedAgentId === currentUserId && (
+        <p className="alert alert-info flex items-center gap-2 text-sm">
+          <span>الطلب ده متعيّن ليك انت — كمّل الخطوات من هنا زي أي مندوب.</span>
+        </p>
       )}
 
       {status === "invoice_preparation" && draftInvoiceId && (

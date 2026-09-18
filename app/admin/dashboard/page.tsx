@@ -2,6 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import PipelineStrip from "@/components/PipelineStrip";
 import RecentOrdersList from "@/components/RecentOrdersList";
+import AvailabilityToggle from "@/components/AvailabilityToggle";
 import Icon from "@/components/Icon";
 import Link from "next/link";
 
@@ -10,6 +11,12 @@ export default async function AdminDashboard() {
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("users").select("role,full_name").eq("id", user?.id).single();
   const isSuperAdmin = profile?.role === "super_admin";
+  const isBusinessAdmin = profile?.role === "business_admin";
+
+  // Business Admin يقدر يستقبل طلبات زي أي مندوب — لازم يفعّل حالة التوفر
+  const { data: agentProfile } = isBusinessAdmin
+    ? await supabase.from("agent_profiles").select("availability_status").eq("user_id", user?.id).single()
+    : { data: null };
 
   const { data: dashboard } = await supabase.rpc("get_business_dashboard").single();
   const { data: financial } = await supabase.rpc("get_financial_summary").single();
@@ -39,9 +46,17 @@ export default async function AdminDashboard() {
     <>
       <AdminNav />
       <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-xl font-bold">أهلًا، {profile?.full_name?.split(" ")[0] ?? ""} 👋</h1>
-          <p className="text-sm text-textSecondary">{today}</p>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold">أهلًا، {profile?.full_name?.split(" ")[0] ?? ""} 👋</h1>
+            <p className="text-sm text-textSecondary">{today}</p>
+          </div>
+          {isBusinessAdmin && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-textSecondary">استقبال الطلبات كمندوب:</span>
+              <AvailabilityToggle status={agentProfile?.availability_status ?? "offline"} />
+            </div>
+          )}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">

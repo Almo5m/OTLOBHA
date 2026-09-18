@@ -6,6 +6,8 @@ import OrderItemsList from "@/components/OrderItemsList";
 import InvoiceCard from "@/components/InvoiceCard";
 import OrderTimeline from "@/components/OrderTimeline";
 import PaymentProofPanel from "@/components/PaymentProofPanel";
+import ShoppingForm from "@/components/ShoppingForm";
+import DeliveryActions from "@/components/DeliveryActions";
 import Icon from "@/components/Icon";
 
 const EVENT_BY_STATUS: Record<string, { key: string; label: string }> = {
@@ -20,6 +22,7 @@ const EVENT_BY_STATUS: Record<string, { key: string; label: string }> = {
 
 export default async function AdminOrderDetailPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: order } = await supabase.from("orders").select("*").eq("id", params.id).single();
   const { data: customer } = order
@@ -71,8 +74,24 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
         )}
 
         <div className="my-4">
-          <AdminOrderActions orderId={order.id} status={order.status} draftInvoiceId={draftInvoiceId} assignedAgentId={order.assigned_agent_id} />
+          <AdminOrderActions
+            orderId={order.id} status={order.status} draftInvoiceId={draftInvoiceId}
+            assignedAgentId={order.assigned_agent_id} currentUserId={user?.id}
+          />
         </div>
+
+        {/* لو الأدمن نفسه هو المندوب المسند للطلب (استلمه بنفسه)، بيشوف نفس
+            خطوات المندوب (التسوق والتوصيل) هنا مباشرة */}
+        {order.assigned_agent_id === user?.id && (
+          <div className="mb-4 space-y-4">
+            {(order.status === "shopping" || order.status === "invoice_preparation") && (
+              <ShoppingForm orderId={order.id} items={(items as any) ?? []} />
+            )}
+            {(order.status === "assigned" || order.status === "on_the_way") && (
+              <DeliveryActions orderId={order.id} status={order.status} />
+            )}
+          </div>
+        )}
 
         {event && (
           <WhatsAppMessageButton orderId={order.id} eventKey={event.key} label={event.label} />
