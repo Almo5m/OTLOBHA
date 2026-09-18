@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
       // نفس السبب المذكور في lib/supabase/server.ts — الدور والصلاحيات
       // لازم يتقروا طازة من الداتابيز في كل طلب بدون أي كاش من Next.js.
       global: {
-        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" })
+        fetch: (url: RequestInfo | URL, options?: RequestInit) => fetch(url, { ...options, cache: "no-store" })
       },
       cookies: {
         get(name: string) {

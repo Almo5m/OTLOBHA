@@ -14,7 +14,7 @@ export function createServerSupabase() {
       // القديم لحد ما الـ token يتغيّر (يعني logout/login). بيانات الصلاحيات
       // والدور لازم تكون طازة دايمًا، فمفيش أي كاش هنا خالص.
       global: {
-        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" })
+        fetch: (url: RequestInfo | URL, options?: RequestInit) => fetch(url, { ...options, cache: "no-store" })
       },
       cookies: {
         get(name: string) {
