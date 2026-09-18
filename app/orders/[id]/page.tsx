@@ -7,6 +7,7 @@ import InvoiceCard from "@/components/InvoiceCard";
 import { Badge } from "@/components/Badge";
 import Icon from "@/components/Icon";
 import Link from "next/link";
+import ContactSupportLink from "@/components/ContactSupportLink";
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabase();
@@ -46,12 +47,18 @@ export default async function OrderDetailPage({ params }: { params: { id: string
         </div>
 
         {paymentProof && (
-          <div className="alert alert-info mb-4 flex items-center gap-2">
+          <div className="alert alert-info mb-4 flex flex-wrap items-center gap-2">
             <Icon name="wallet" size={16} className="shrink-0" />
             <span>حالة التحويل: </span>
             <Badge variant={paymentProof.status === "verified" ? "success" : paymentProof.status === "rejected" ? "error" : "warning"}>
-              {paymentProof.status === "verified" ? "تم التأكيد" : paymentProof.status === "rejected" ? "مرفوض — تواصل مع الخدمة" : "بانتظار المراجعة"}
+              {paymentProof.status === "verified" ? "تم التأكيد" : paymentProof.status === "rejected" ? "مرفوض" : "بانتظار المراجعة"}
             </Badge>
+            {paymentProof.status === "rejected" && (
+              <ContactSupportLink
+                label="تواصل معانا"
+                message={`مرحبًا، إثبات الدفع بتاع طلبي ${order.order_number} اتعمله رفض وعايز أستفسر عن السبب.`}
+              />
+            )}
           </div>
         )}
 

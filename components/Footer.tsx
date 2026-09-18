@@ -41,7 +41,7 @@ export default async function Footer() {
         </div>
 
         <div className="mt-8 border-t border-borderc pt-4 text-center text-xs text-textSecondary">
-          © {new Date().getFullYear()} اطلبها — جميع الحقوق محفوظة
+          © {new Date().getFullYear()} المنيب جو — جميع الحقوق محفوظة
         </div>
       </div>
     </footer>

@@ -29,11 +29,23 @@ const BENTO_SPANS = [
 const HOW_IT_WORKS = [
   { icon: "cart" as const, title: "اختار احتياجاتك", desc: "من الكتالوج أو حتى منتج مش موجود عندنا" },
   { icon: "agent" as const, title: "نشتريها فعليًا", desc: "مندوبنا بيشتري المنتجات بنفسه بالسعر الحقيقي" },
-  { icon: "delivery" as const, title: "توصلك لباب البيت", desc: "دفع عند الاستلام، وتقدر تتابع طلبك أول بأول" }
+  { icon: "delivery" as const, title: "توصلك لباب البيت", desc: "ادفع أونلاين أو عند الاستلام، وتابع طلبك أول بأول" }
 ];
 
 export default async function HomePage() {
   const supabase = createServerSupabase();
+
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://almoneib-go.vercel.app";
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "المنيب جو",
+    description: "خدمة توصيل محلية داخل المنيب — سوق، صيدلية، خضار وأكتر، بيشتريها مندوبنا فعليًا ويوصّلها لباب البيت.",
+    url: SITE_URL,
+    image: `${SITE_URL}/og-image.png`,
+    areaServed: { "@type": "Place", name: "المنيب، الجيزة، مصر" },
+    priceRange: "$$"
+  };
 
   const { data: categories } = await supabase
     .from("categories")
@@ -50,6 +62,10 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
       <CustomerNav />
       <OnboardingTutorial />
       <main className="mx-auto max-w-2xl px-4 pb-24 pt-6 md:max-w-4xl md:pb-10 lg:max-w-5xl">
@@ -57,21 +73,23 @@ export default async function HomePage() {
           <div className="alert alert-warning mb-6">{settings.maintenance_message}</div>
         )}
 
-        {settings.home_banner_image_url && (
-          <div className="mb-8 overflow-hidden rounded-lg">
-            <Image
-              src={settings.home_banner_image_url}
-              alt="اطلبها"
-              width={800}
-              height={300}
-              className="h-auto w-full object-cover"
-            />
-          </div>
-        )}
-
-        {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد */}
+        {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد. الصورة تيجي من
+            الإعدادات (home_banner_image_url) لو الأدمن رفعها، وإلا برجع
+            للرسمة الافتراضية */}
         <section className="mb-10 flex flex-col items-center gap-6 text-center md:flex-row-reverse md:text-right">
-          <HeroIllustration className="h-40 w-auto shrink-0 md:h-52" />
+          <div className="h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-surfaceElevated sm:h-56 md:h-64 md:w-64">
+            {settings.home_banner_image_url ? (
+              <Image
+                src={settings.home_banner_image_url}
+                alt="المنيب جو"
+                width={500}
+                height={500}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <HeroIllustration className="h-full w-auto mx-auto" />
+            )}
+          </div>
           <div>
             <span className="badge badge-neutral mb-3 inline-flex">
               <Icon name="location" size={13} />
@@ -86,14 +104,20 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* كيف تعمل الخدمة — 3 خطوات بسيطة */}
-        <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* كيف تعمل الخدمة — 3 خطوات، كل واحدة في كارت مستقل بشارة أكبر
+            بلون البراند بدل صف نص عادي، عشان تبقى أوضح وأقوى بصريًا */}
+        <section className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {HOW_IT_WORKS.map((step, i) => (
-            <div key={i} className="flex items-start gap-3 sm:flex-col sm:items-center sm:text-center">
-              <IconBadge name={step.icon} tone={i === 1 ? "accent" : "neutral"} />
-              <div className="sm:mt-1">
-                <p className="font-medium">{step.title}</p>
-                <p className="mt-0.5 text-xs text-textSecondary">{step.desc}</p>
+            <div key={i} className="card flex items-center gap-4 sm:flex-col sm:text-center">
+              <div className="relative shrink-0">
+                <IconBadge name={step.icon} tone="brand" size="lg" />
+                <span className="numeric absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-white">
+                  {i + 1}
+                </span>
+              </div>
+              <div>
+                <p className="font-bold">{step.title}</p>
+                <p className="mt-1 text-sm text-textSecondary">{step.desc}</p>
               </div>
             </div>
           ))}

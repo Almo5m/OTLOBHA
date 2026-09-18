@@ -10,6 +10,7 @@ const FIELDS: { key: string; label: string; type: "number" | "text" | "boolean" 
   { key: "commission_rate", label: "نسبة العمولة (مثال: 0.10 = 10%)", type: "number" },
   { key: "cancellation_debt_value", label: "قيمة/نسبة مديونية الإلغاء", type: "number" },
   { key: "cancellation_debt_is_percentage", label: "هل القيمة أعلاه نسبة مئوية؟", type: "boolean" },
+  { key: "support_whatsapp_number", label: "رقم واتساب التواصل/الشكاوى (مثال: 01012345678)", type: "text" },
   { key: "price_disclaimer_text", label: "نص تنبيه تغيّر الأسعار", type: "text" },
   { key: "outside_working_hours_message", label: "رسالة خارج ساعات العمل", type: "text" },
   { key: "maintenance_message", label: "رسالة وضع الصيانة", type: "text" }
@@ -48,9 +49,12 @@ export default function AdminSettingsForm() {
                   <option value="true">نعم</option>
                   <option value="false">لا</option>
                 </select>
-              ) : f.type === "text" ? (
+              ) : f.type === "text" && f.key !== "support_whatsapp_number" ? (
                 <textarea className="input" value={values[f.key] ?? ""}
                   onChange={(e) => setValues({ ...values, [f.key]: e.target.value })} />
+              ) : f.key === "support_whatsapp_number" ? (
+                <input type="tel" dir="ltr" className="input" placeholder="01012345678" value={values[f.key] ?? ""}
+                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value.replace(/[^\d]/g, "") })} />
               ) : (
                 <input type="number" step="0.01" className="input" value={values[f.key] ?? 0}
                   onChange={(e) => setValues({ ...values, [f.key]: Number(e.target.value) })} />
@@ -88,20 +92,45 @@ export default function AdminSettingsForm() {
         </div>
       </div>
 
-      {/* بانر الصفحة الرئيسية */}
+      {/* شعار التطبيق — بيستبدل المونوجرام الافتراضي في كل الـnavbars */}
       <h2 className="mb-3 mt-8 flex items-center gap-2 font-bold">
-        <Icon name="products" size={17} className="text-textSecondary" /> بانر الصفحة الرئيسية
+        <Icon name="market" size={17} className="text-textSecondary" /> شعار التطبيق
       </h2>
       <div className="card space-y-3">
+        <p className="text-xs text-textSecondary">
+          الشعار ده بيظهر بدل الرمز الافتراضي (م) في أعلى كل الصفحات — للعميل والمندوب والإدارة. الأفضل صورة مربعة بخلفية شفافة أو فاتحة.
+        </p>
+        {values.app_logo_url && (
+          <img src={values.app_logo_url} alt="" className="h-16 w-16 rounded-xl border border-borderc object-cover" />
+        )}
+        <ImageUploadField onUploaded={(url) => setValues({ ...values, app_logo_url: url })} />
+        <div className="flex gap-2">
+          <button onClick={() => handleSave("app_logo_url")} className="btn-secondary">حفظ الشعار</button>
+          {values.app_logo_url && (
+            <button onClick={() => { setValues({ ...values, app_logo_url: "" }); handleSave("app_logo_url"); }} className="text-sm text-error">
+              إزالة الشعار (رجوع للرمز الافتراضي)
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* صورة الهيرو في الصفحة الرئيسية — بتستبدل الرسمة الافتراضية لو اتحطت */}
+      <h2 className="mb-3 mt-8 flex items-center gap-2 font-bold">
+        <Icon name="products" size={17} className="text-textSecondary" /> صورة الصفحة الرئيسية
+      </h2>
+      <div className="card space-y-3">
+        <p className="text-xs text-textSecondary">
+          الصورة دي بتظهر بدل رسمة الدراجة الافتراضية في أعلى الصفحة الرئيسية للعميل. لو مفيش صورة مرفوعة، هترجع الرسمة الافتراضية تلقائيًا.
+        </p>
         {values.home_banner_image_url && (
           <img src={values.home_banner_image_url} alt="" className="h-32 w-full rounded-md object-cover" />
         )}
         <ImageUploadField onUploaded={(url) => setValues({ ...values, home_banner_image_url: url })} />
         <div className="flex gap-2">
-          <button onClick={() => handleSave("home_banner_image_url")} className="btn-secondary">حفظ البانر</button>
+          <button onClick={() => handleSave("home_banner_image_url")} className="btn-secondary">حفظ الصورة</button>
           {values.home_banner_image_url && (
             <button onClick={() => { setValues({ ...values, home_banner_image_url: "" }); handleSave("home_banner_image_url"); }} className="text-sm text-error">
-              إزالة البانر
+              إزالة الصورة (رجوع للرسمة الافتراضية)
             </button>
           )}
         </div>

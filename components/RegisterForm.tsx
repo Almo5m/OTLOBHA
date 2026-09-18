@@ -66,7 +66,7 @@ export default function RegisterForm() {
       <div className="mb-1"><Wordmark /></div>
       <p className="mb-1 mt-3 text-lg font-bold">إنشاء حساب جديد</p>
       <p className="mb-8 text-sm text-textSecondary">
-        {returnTo ? "خطوة أخيرة بسيطة عشان تكمّل طلبك" : "للطلب من «اطلبها» — خدمة داخل المنيب حاليًا"}
+        {returnTo ? "خطوة أخيرة بسيطة عشان تكمّل طلبك" : "للطلب من «المنيب جو» — خدمة داخل المنيب حاليًا"}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

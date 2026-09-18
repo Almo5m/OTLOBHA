@@ -5,12 +5,12 @@ type IconName =
   | "complaints" | "rating" | "products" | "reports"
   | "notifications" | "settings" | "dashboard" | "search" | "account"
   | "check" | "close" | "chevron" | "plus" | "moon" | "sun" | "debt" | "logout" | "menu"
-  | "eye" | "eyeOff";
+  | "eye" | "eyeOff" | "externalLink";
 
 const STROKE = 1.75;
 
 /**
- * نظام الأيقونات المخصص لـ«اطلبها» — Soft Rounded + Geometric.
+ * نظام الأيقونات المخصص لـ«المنيب جو» — Soft Rounded + Geometric.
  * كل أيقونة: viewBox 24x24، stroke بنفس السُمك، زوايا ناعمة (linecap/linejoin round).
  * لا يعتمد على أي Icon Library خارجية.
  */
@@ -41,6 +41,14 @@ export default function Icon({ name, size = 20, className = "" }: { name: IconNa
           <path d="M3 3l18 18" />
           <path d="M10.6 5.2A9.7 9.7 0 0 1 12 5c5.7 0 9.5 7 9.5 7a15.6 15.6 0 0 1-3.3 4.1M6.2 6.9C3.6 8.8 2.5 12 2.5 12s3.8 7 9.5 7c1.3 0 2.5-.3 3.6-.8" />
           <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+        </svg>
+      );
+    case "externalLink":
+      return (
+        <svg {...common}>
+          <path d="M9 4.5H5.5A1.5 1.5 0 0 0 4 6v12.5A1.5 1.5 0 0 0 5.5 20H18a1.5 1.5 0 0 0 1.5-1.5V15" />
+          <path d="M14.5 4h5.5v5.5" />
+          <path d="M20 4l-9.5 9.5" />
         </svg>
       );
     case "market":

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -8,6 +8,14 @@ export default function AvailabilityToggle({ status }: { status: string }) {
   const supabase = createClient();
   const router = useRouter();
   const [current, setCurrent] = useState(status);
+
+  // لازم نزامن الحالة المحلية مع القيمة الجاية من السيرفر (status) في أي
+  // وقت هي تتغيّر، وإلا الزرار بيفضل شايل أول قيمة اتحمّل بيها بس ولا يعكس
+  // القيمة الحقيقية المحفوظة في قاعدة البيانات — ده اللي كان بيخلي الحالة
+  // "ترجع" لما تدخل صفحة تانية وترجع تاني.
+  useEffect(() => {
+    setCurrent(status);
+  }, [status]);
 
   async function toggle() {
     const next = current === "available" ? "offline" : "available";

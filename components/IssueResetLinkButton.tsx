@@ -16,7 +16,7 @@ export default function IssueResetLinkButton({ phone }: { phone: string }) {
     if (error) { setError(error.message); return; }
 
     const resetUrl = `${window.location.origin}/reset-password?token=${token}`;
-    const message = `مرحبًا، لإعادة تعيين كلمة المرور الخاصة بحسابك في اطلبها، اضغط على الرابط التالي: ${resetUrl}`;
+    const message = `مرحبًا، لإعادة تعيين كلمة المرور الخاصة بحسابك في المنيب جو، اضغط على الرابط التالي: ${resetUrl}`;
     window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(message)}`, "_blank");
   }
 

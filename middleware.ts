@@ -17,6 +17,15 @@ function isPublicRoute(pathname: string) {
 }
 
 function pathBelongsToRole(pathname: string, role: string) {
+  // الإعدادات والتصنيفات والتقارير بقوا Super Admin بس — لازم يتفحصوا قبل
+  // الفحص العام لـ/admin عشان الأولوية تكون للمسار الأكثر تحديدًا
+  if (
+    pathname.startsWith("/admin/settings") ||
+    pathname.startsWith("/admin/categories") ||
+    pathname.startsWith("/admin/reports")
+  ) {
+    return role === "super_admin";
+  }
   if (pathname.startsWith("/admin")) return role === "business_admin" || role === "super_admin";
   if (pathname.startsWith("/super")) return role === "super_admin";
   if (pathname.startsWith("/agent")) return role === "delivery_agent";
@@ -31,6 +40,11 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // نفس السبب المذكور في lib/supabase/server.ts — الدور والصلاحيات
+      // لازم يتقروا طازة من الداتابيز في كل طلب بدون أي كاش من Next.js.
+      global: {
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" })
+      },
       cookies: {
         get(name: string) {
           return request.cookies.get(name)?.value;

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Wordmark from "@/components/Wordmark";
 import PasswordInput from "@/components/PasswordInput";
+import ContactSupportLink from "@/components/ContactSupportLink";
+import Icon from "@/components/Icon";
 
 const ROLE_HOME: Record<string, string> = {
   customer: "/home",
@@ -56,45 +58,68 @@ export default function LoginForm() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-6 py-12">
-      <div className="mb-1"><Wordmark /></div>
-      <p className="mb-8 text-sm text-textSecondary">خدمة التوصيل المحلية — المنيب</p>
+    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12">
+      {/* خلفية زخرفية بسيطة بلون البراند بدل الخلفية الفاضية — بلمسة هوية بس
+          من غير ما تلفت النظر عن الفورم نفسه */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-b from-brand/15 to-transparent"
+      />
 
-      {returnTo && (
-        <div className="alert alert-info mb-6">
-          سجّل الدخول عشان تكمّل طلبك من نفس المكان اللي وقفت فيه.
-        </div>
-      )}
+      <div className="mb-8 flex flex-col items-center gap-2 text-center">
+        <Wordmark className="scale-110" />
+        <p className="text-sm text-textSecondary">خدمة التوصيل المحلية — المنيب</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="label" htmlFor="phone">رقم الهاتف</label>
-          <input
-            id="phone" className="input" inputMode="numeric" placeholder="01xxxxxxxxx"
-            value={phone} onChange={(e) => setPhone(e.target.value)} required
+      <div className="w-full max-w-sm rounded-2xl border border-borderc bg-surfaceElevated p-6 shadow-sm sm:p-8">
+        {returnTo && (
+          <div className="alert alert-info mb-6">
+            سجّل الدخول عشان تكمّل طلبك من نفس المكان اللي وقفت فيه.
+          </div>
+        )}
+
+        <h1 className="mb-5 text-lg font-bold">تسجيل الدخول</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label" htmlFor="phone">رقم الهاتف</label>
+            <div className="relative">
+              <Icon name="account" size={17} className="pointer-events-none absolute inset-y-0 right-3 my-auto text-textSecondary" />
+              <input
+                id="phone" className="input pr-10" inputMode="numeric" placeholder="01xxxxxxxxx"
+                value={phone} onChange={(e) => setPhone(e.target.value)} required
+              />
+            </div>
+          </div>
+          <div>
+            <label className="label" htmlFor="password">كلمة المرور</label>
+            <PasswordInput id="password" value={password} onChange={setPassword} autoComplete="current-password" required />
+          </div>
+
+          {error && <p className="error-text">{error}</p>}
+
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? "جارٍ الدخول..." : "تسجيل الدخول"}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-textSecondary">
+          نسيت كلمة المرور؟{" "}
+          <ContactSupportLink
+            label="تواصل معانا لإعادة تعيينها"
+            message="مرحبًا، نسيت كلمة مرور حسابي في المنيب جو وعايز أعيد تعيينها."
           />
-        </div>
-        <div>
-          <label className="label" htmlFor="password">كلمة المرور</label>
-          <PasswordInput id="password" value={password} onChange={setPassword} autoComplete="current-password" required />
-        </div>
+        </p>
 
-        {error && <p className="error-text">{error}</p>}
+        <div className="my-5 h-px bg-borderc" />
 
-        <button type="submit" disabled={loading} className="btn-primary w-full">
-          {loading ? "جارٍ الدخول..." : "تسجيل الدخول"}
-        </button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-textSecondary">
-        نسيت كلمة المرور؟ تواصل مع الخدمة لإعادة تعيينها.
-      </p>
-      <p className="mt-2 text-center text-sm">
-        ليس لديك حساب؟{" "}
-        <Link href={returnTo ? `/register?returnTo=${encodeURIComponent(returnTo)}` : "/register"} className="text-accent underline">
-          إنشاء حساب جديد
-        </Link>
-      </p>
+        <p className="text-center text-sm">
+          ليس لديك حساب؟{" "}
+          <Link href={returnTo ? `/register?returnTo=${encodeURIComponent(returnTo)}` : "/register"} className="font-medium text-accent underline underline-offset-2">
+            إنشاء حساب جديد
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

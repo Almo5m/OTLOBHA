@@ -1,6 +1,12 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import Wordmark from "@/components/Wordmark";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "سياسة الخصوصية",
+  description: "سياسة الخصوصية وحماية بيانات العملاء في خدمة المنيب جو للتوصيل."
+};
 
 export default async function PrivacyPage() {
   const supabase = createServerSupabase();

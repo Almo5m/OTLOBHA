@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     try {
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: sub.keys },
-        JSON.stringify({ title: "اطلبها", body: record.payload?.text ?? "لديك تحديث جديد" })
+        JSON.stringify({ title: "المنيب جو", body: record.payload?.text ?? "لديك تحديث جديد" })
       );
     } catch (e) {
       console.error("push failed", e);

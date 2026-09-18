@@ -1,6 +1,12 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import Wordmark from "@/components/Wordmark";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "الشروط والأحكام",
+  description: "الشروط والأحكام الخاصة باستخدام خدمة المنيب جو للتوصيل."
+};
 
 export default async function TermsPage() {
   const supabase = createServerSupabase();

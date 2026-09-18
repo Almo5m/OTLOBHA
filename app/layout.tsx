@@ -11,10 +11,40 @@ const almarai = Almarai({ subsets: ["arabic"], weight: ["400", "700", "800"], va
 // Inter: للأرقام/النصوص اللاتينية — متناسق بصريًا مع Almarai بدون تعارض حاد
 const inter = Inter({ subsets: ["latin"], variable: "--font-latin" });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://almoneib-go.vercel.app";
+const SITE_NAME = "المنيب جو";
+const SITE_DESCRIPTION = "خدمة توصيل محلية داخل المنيب — اطلب من السوق أو الصيدلية أو الخضار، ومندوبنا يشتريها فعليًا ويوصّلها لباب بيتك.";
+
 export const metadata: Metadata = {
-  title: "اطلبها — نطلبها ونوصّلها لحد باب البيت",
-  description: "خدمة توصيل محلية داخل المنيب",
-  manifest: "/manifest.json"
+  // metadataBase لازم يتظبط على الدومين الحقيقي بعد ربط الموقع بدومين (أو
+  // رابط Vercel بتاعه) — من غيره روابط og:image ممكن تطلع بمسار غلط لما
+  // تتشارك على واتساب/فيسبوك. غيّر NEXT_PUBLIC_SITE_URL في متغيرات البيئة.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — نطلب ونوصّل لحد باب البيت`,
+    template: `%s — ${SITE_NAME}`
+  },
+  description: SITE_DESCRIPTION,
+  manifest: "/manifest.json",
+  openGraph: {
+    title: `${SITE_NAME} — نطلب ونوصّل لحد باب البيت`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: SITE_NAME }],
+    locale: "ar_EG",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — نطلب ونوصّل لحد باب البيت`,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.png"]
+  }
+};
+
+export const viewport = {
+  themeColor: "#FBB51F"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
