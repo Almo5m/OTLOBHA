@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useCartStore } from "@/lib/cart-store";
 
 export default function AddToCartButton({
-  type, productId, manualName, displayedPrice, unitId, unitName
+  type, productId, productName, imageUrl, manualName, displayedPrice, unitId, unitName
 }: {
   type: "catalog" | "manual";
   productId?: string;
+  productName?: string;
+  imageUrl?: string | null;
   manualName?: string;
   displayedPrice?: number;
   unitId: string;
@@ -20,7 +22,7 @@ export default function AddToCartButton({
   function handleAdd() {
     addItem({
       key: crypto.randomUUID(),
-      type, productId, manualName, displayedPrice,
+      type, productId, productName, imageUrl, manualName, displayedPrice,
       quantity, unitId, unitName
     });
     setAdded(true);

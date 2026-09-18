@@ -71,7 +71,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
         )}
 
         <div className="my-4">
-          <AdminOrderActions orderId={order.id} status={order.status} draftInvoiceId={draftInvoiceId} />
+          <AdminOrderActions orderId={order.id} status={order.status} draftInvoiceId={draftInvoiceId} assignedAgentId={order.assigned_agent_id} />
         </div>
 
         {event && (

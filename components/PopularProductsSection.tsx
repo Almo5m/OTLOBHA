@@ -48,6 +48,8 @@ export default function PopularProductsSection() {
                 <AddToCartButton
                   type="catalog"
                   productId={p.product_id}
+                  productName={p.name}
+                  imageUrl={p.image_url}
                   displayedPrice={p.last_known_price}
                   unitId={p.unit_id}
                   unitName={p.unit_name}

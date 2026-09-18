@@ -8,6 +8,7 @@ import { Badge } from "@/components/Badge";
 import Icon from "@/components/Icon";
 import Link from "next/link";
 import ContactSupportLink from "@/components/ContactSupportLink";
+import OrderRealtimeRefresher from "@/components/OrderRealtimeRefresher";
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabase();
@@ -36,6 +37,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   return (
     <>
       <CustomerNav />
+      <OrderRealtimeRefresher orderId={params.id} />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:max-w-3xl md:pb-6 lg:max-w-4xl">
         <h1 className="mb-1 text-xl font-bold">طلب {order.order_number}</h1>
         <p className="numeric mb-6 text-sm text-textSecondary">

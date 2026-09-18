@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminOrderActions({
-  orderId, status, draftInvoiceId
-}: { orderId: string; status: string; draftInvoiceId: string | null }) {
+  orderId, status, draftInvoiceId, assignedAgentId
+}: { orderId: string; status: string; draftInvoiceId: string | null; assignedAgentId?: string | null }) {
   const supabase = createClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -44,6 +44,14 @@ export default function AdminOrderActions({
           <textarea className="input" placeholder="سبب الرفض" value={reason} onChange={(e) => setReason(e.target.value)} />
           <button disabled={loading} onClick={() => run(() => supabase.rpc("reject_order", { p_order_id: orderId, p_reason: reason }))}
             className="btn-primary bg-error hover:opacity-90">تأكيد الرفض</button>
+        </div>
+      )}
+
+      {(status === "shopping" || status === "ready_for_delivery") && !assignedAgentId && (
+        <div className="alert alert-warning flex flex-wrap items-center gap-2">
+          <span>الطلب لسه مالوش مندوب متعيّن — على الأغلب مفيش مندوب متاح دلوقتي.</span>
+          <button disabled={loading} onClick={() => run(() => supabase.rpc("admin_retry_agent_assignment", { p_order_id: orderId }))}
+            className="btn-secondary text-xs">إعادة محاولة تعيين مندوب</button>
         </div>
       )}
 

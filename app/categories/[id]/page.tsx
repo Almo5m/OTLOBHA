@@ -46,6 +46,8 @@ export default async function CategoryProductsPage({ params }: { params: { id: s
               <AddToCartButton
                 type="catalog"
                 productId={p.id}
+                productName={p.name}
+                imageUrl={p.image_url}
                 displayedPrice={p.last_known_price}
                 unitId={p.sale_unit_id}
                 unitName={p.sale_units?.name}

@@ -6,6 +6,8 @@ export type CartItem = {
   key: string;                 // معرّف محلي مؤقت
   type: "catalog" | "manual";
   productId?: string;
+  productName?: string;
+  imageUrl?: string | null;
   manualName?: string;
   displayedPrice?: number;     // للعرض فقط، غير نهائي (القسم 17)
   quantity: number;

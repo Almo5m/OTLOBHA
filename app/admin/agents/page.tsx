@@ -21,7 +21,7 @@ export default async function AdminAgentsPage() {
   const rows = (agents ?? []).map((a: any) => ({
     ...a,
     perf: (performance ?? []).find((p: any) => p.agent_id === a.id),
-    av: AVAILABILITY_LABELS[a.agent_profiles?.[0]?.availability_status] ?? AVAILABILITY_LABELS.offline
+    av: AVAILABILITY_LABELS[a.agent_profiles?.availability_status] ?? AVAILABILITY_LABELS.offline
   }));
 
   return (

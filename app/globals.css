@@ -29,8 +29,8 @@
   --color-accent-neon: #E3B84E;
 
   /* Brand (احتياطي لتوافق الكود القديم) — نفس الأسود المحايد الآن */
-  --color-brand: #B8470D;
-  --color-brand-dark: #8F3708;
+  --color-brand: #8F6A1F;
+  --color-brand-dark: #6B4F17;
 
   /* Semantic — لاحظ إن Warning اتحول لبرتقالي محروق عشان يتمايز بوضوح عن الذهبي الجديد */
   --color-success: #229A5B;
@@ -77,8 +77,8 @@
   --color-accent-soft: #3A2F14;
   --color-accent-neon: #F0CC6E;
 
-  --color-brand: #F0B04A;
-  --color-brand-dark: #FFC15C;
+  --color-brand: #D9AE3E;
+  --color-brand-dark: #E3B84E;
 
   --color-success: #3FCB7C;
   --color-warning: #E08A3E;

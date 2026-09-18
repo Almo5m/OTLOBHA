@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import CustomerNav from "@/components/CustomerNav";
 import { useCartStore } from "@/lib/cart-store";
 import { createClient } from "@/lib/supabase/client";
@@ -21,16 +22,25 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "wallet" | "instapay">("cash");
   const [disclaimer, setDisclaimer] = useState("");
   const [policyId, setPolicyId] = useState<string | null>(null);
+  const [alreadyAgreedPolicyId, setAlreadyAgreedPolicyId] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [proof, setProof] = useState({ imageUrl: "", senderName: "", senderNumber: "" });
 
   useEffect(() => {
-    supabase.from("addresses").select("*").then(({ data }) => {
-      setAddresses(data ?? []);
-      const def = data?.find((a) => a.is_default);
-      if (def) setAddressId(def.id);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      // فلتر صريح بمعرّف المستخدم الحالي بدل ما نعتمد على RLS بس — عشان
+      // لو الحساب اللي بتختبر بيه أدمن، RLS بتسمحله يشوف عناوين كل العملاء
+      // لأغراض الدعم، لكن هنا في شاشة "طلب لنفسي" لازم يشوف عنوانه هو بس
+      supabase.from("addresses").select("*").eq("customer_id", user.id).then(({ data }) => {
+        setAddresses(data ?? []);
+        const def = data?.find((a) => a.is_default);
+        if (def) setAddressId(def.id);
+      });
+      supabase.from("users").select("terms_agreed_policy_id").eq("id", user.id).single()
+        .then(({ data }) => setAlreadyAgreedPolicyId(data?.terms_agreed_policy_id ?? null));
     });
     supabase.from("platform_settings").select("value").eq("key", "price_disclaimer_text").single()
       .then(({ data }) => setDisclaimer(data?.value ?? ""));
@@ -38,10 +48,14 @@ export default function CheckoutPage() {
       .then(({ data }) => setPolicyId(data?.id ?? null));
   }, []);
 
+  // لو العميل موافق قبل كده على نفس نسخة السياسة، منطلبش موافقة تانية
+  const alreadyAgreed = !!policyId && policyId === alreadyAgreedPolicyId;
+  const needsAgreement = !alreadyAgreed;
+
   async function handleSubmit() {
     setError(null);
     if (items.length === 0) { setError("السلة فارغة"); return; }
-    if (!agreed) { setError("يجب الموافقة على الشروط والسياسات أولاً"); return; }
+    if (needsAgreement && !agreed) { setError("يجب الموافقة على الشروط والسياسات أولاً"); return; }
     if (!addressId && !customAddress.trim()) { setError("يجب تحديد عنوان التسليم"); return; }
     if (paymentMethod !== "cash" && !proof.imageUrl) {
       setError("يجب رفع صورة إثبات التحويل لإتمام الطلب بهذه الطريقة");
@@ -72,6 +86,12 @@ export default function CheckoutPage() {
     setLoading(false);
     if (rpcError) { setError("حدث خطأ أثناء إرسال الطلب: " + rpcError.message); return; }
 
+    // نسجّل موافقته على نسخة السياسة دي عشان مايتسألش تاني في نفس النسخة
+    if (needsAgreement && policyId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) await supabase.from("users").update({ terms_agreed_policy_id: policyId }).eq("id", user.id);
+    }
+
     clear();
     router.push(`/orders/${data}`);
   }
@@ -96,7 +116,11 @@ export default function CheckoutPage() {
               ))}
             </div>
           )}
-          <button className="mt-2 text-sm text-primary underline" onClick={() => setUseCustom(!useCustom)}>
+          <button
+            className="btn-secondary mt-2 px-3 py-1.5 text-xs"
+            onClick={() => setUseCustom(!useCustom)}
+          >
+            <Icon name="location" size={13} />
             {useCustom ? "استخدام عنوان محفوظ" : "استخدام عنوان مختلف لهذا الطلب"}
           </button>
           {useCustom && (
@@ -129,10 +153,28 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        <label className="mb-4 flex items-start gap-2 text-sm">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1" />
-          أوافق على الشروط والأحكام وسياسة الخصوصية، وعلى أن الأسعار قابلة للتغيير حسب السعر الفعلي وقت الشراء.
-        </label>
+        {needsAgreement ? (
+          <div className="mb-4 rounded-lg border border-borderc p-3">
+            <label className="flex items-start gap-2 text-sm">
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1" />
+              <span>
+                أوافق على{" "}
+                <Link href="/legal/terms" target="_blank" className="font-medium text-accent underline underline-offset-2">
+                  الشروط والأحكام
+                </Link>{" "}
+                و
+                <Link href="/legal/privacy" target="_blank" className="font-medium text-accent underline underline-offset-2">
+                  سياسة الخصوصية
+                </Link>
+                ، وعلى أن الأسعار قابلة للتغيير حسب السعر الفعلي وقت الشراء.
+              </span>
+            </label>
+          </div>
+        ) : (
+          <p className="mb-4 flex items-center gap-1.5 text-xs text-textSecondary">
+            <Icon name="check" size={13} className="text-success" /> تمت الموافقة على الشروط والأحكام مسبقًا.
+          </p>
+        )}
 
         {error && <p className="mb-3 text-sm text-error">{error}</p>}
 
