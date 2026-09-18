@@ -12,8 +12,8 @@ const TONE_BG: Record<Tone, string> = {
   info: "bg-info"
 };
 
-// "brand" الآن لون Ink المحايد (أسود في الفاتح/أبيض في الغامق) فلازم نص الأيقونة
-// يتبع inkContrast بدل الأبيض الثابت، وإلا يختفي في الـDark Mode
+// "brand" بقى بلون هوية "المنيب جو" البرتقالي (مش لون Ink محايد زي الأول)،
+// فنص الأيقونة بيتبع inkContrast عشان يفضل مقروء في الوضعين الفاتح والغامق
 const TONE_TEXT: Record<Tone, string> = {
   neutral: "text-textPrimary",
   accent: "text-white",

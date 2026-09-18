@@ -77,7 +77,7 @@ export default function RegisterForm() {
         </div>
         <div>
           <label className="label">رقم الهاتف</label>
-          <input className="input" inputMode="numeric" placeholder="01xxxxxxxxx" required
+          <input className="input" inputMode="numeric" dir="ltr" placeholder="01xxxxxxxxx" required
             value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
         </div>
         <div>

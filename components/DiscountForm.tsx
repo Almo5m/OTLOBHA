@@ -58,7 +58,7 @@ export default function DiscountForm() {
           <option value="percentage">نسبة مئوية %</option>
           <option value="fixed">قيمة ثابتة ج.م</option>
         </select>
-        <input type="number" className="input" placeholder="القيمة" value={form.value}
+        <input type="number" dir="ltr" className="input" placeholder="القيمة" value={form.value}
           onChange={(e) => setForm({ ...form, value: e.target.value })} />
       </div>
       {error && <p className="text-sm text-error">{error}</p>}

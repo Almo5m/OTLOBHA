@@ -30,7 +30,7 @@ export default function ProductRowActions({ productId, status, price }: { produc
     <div className="flex items-center gap-3">
       {editing ? (
         <div className="flex items-center gap-1">
-          <input type="number" className="w-20 rounded-sm border border-line px-1 py-0.5 text-sm"
+          <input type="number" dir="ltr" className="w-20 rounded-sm border border-line px-1 py-0.5 text-sm"
             value={newPrice} onChange={(e) => setNewPrice(Number(e.target.value))} />
           <button onClick={savePrice} disabled={loading} className="text-xs text-primary underline">حفظ</button>
         </div>

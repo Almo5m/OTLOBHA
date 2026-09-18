@@ -55,9 +55,9 @@ export default function PromotionForm() {
 
       <div className="flex items-center gap-2 text-sm">
         <span>لو العميل طلب</span>
-        <input type="number" className="input w-20" value={form.count} onChange={(e) => setForm({ ...form, count: e.target.value })} />
+        <input type="number" dir="ltr" className="input w-20" value={form.count} onChange={(e) => setForm({ ...form, count: e.target.value })} />
         <span>مرات خلال</span>
-        <input type="number" className="input w-20" value={form.windowHours} onChange={(e) => setForm({ ...form, windowHours: e.target.value })} />
+        <input type="number" dir="ltr" className="input w-20" value={form.windowHours} onChange={(e) => setForm({ ...form, windowHours: e.target.value })} />
         <span>ساعة</span>
       </div>
 
@@ -68,7 +68,7 @@ export default function PromotionForm() {
           <option value="delivery_discount_fixed">خصم قيمة ثابتة على التوصيل</option>
         </select>
         {form.rewardType !== "free_delivery" && (
-          <input type="number" className="input" placeholder="القيمة" value={form.rewardValue}
+          <input type="number" dir="ltr" className="input" placeholder="القيمة" value={form.rewardValue}
             onChange={(e) => setForm({ ...form, rewardValue: e.target.value })} />
         )}
       </div>

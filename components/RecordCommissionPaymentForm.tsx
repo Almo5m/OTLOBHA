@@ -26,7 +26,7 @@ export default function RecordCommissionPaymentForm() {
   return (
     <div className="card space-y-3">
       <h2 className="font-medium">تسجيل دفعة عمولة</h2>
-      <input type="number" className="input" placeholder="المبلغ" value={form.amount}
+      <input type="number" dir="ltr" className="input" placeholder="المبلغ" value={form.amount}
         onChange={(e) => setForm({ ...form, amount: e.target.value })} />
       <div className="flex gap-2">
         <input type="date" className="input" value={form.from} onChange={(e) => setForm({ ...form, from: e.target.value })} />

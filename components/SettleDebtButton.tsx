@@ -22,7 +22,7 @@ export default function SettleDebtButton({ debtId, remaining }: { debtId: string
 
   return (
     <div className="flex items-center gap-2">
-      <input type="number" className="w-24 rounded-sm border border-line px-2 py-1 text-sm" value={amount}
+      <input type="number" dir="ltr" className="w-24 rounded-sm border border-line px-2 py-1 text-sm" value={amount}
         onChange={(e) => setAmount(Number(e.target.value))} />
       <button onClick={handleSettle} disabled={loading} className="text-sm text-primary underline">تأكيد</button>
     </div>

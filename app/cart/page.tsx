@@ -60,7 +60,7 @@ export default function CartPage() {
                   <p className="text-xs text-textSecondary">{item.unitName} {item.comment ? `— ${item.comment}` : ""}</p>
                 </div>
                 <input
-                  type="number" min={0.5} step="0.5" value={item.quantity}
+                  type="number" dir="ltr" min={0.5} step="0.5" value={item.quantity}
                   onChange={(e) => updateQuantity(item.key, Number(e.target.value))}
                   className="w-16 rounded-sm border border-line px-2 py-1.5 text-center text-sm"
                 />
@@ -83,7 +83,7 @@ export default function CartPage() {
             <input className="input" placeholder="اسم المنتج" value={manualForm.name}
               onChange={(e) => setManualForm({ ...manualForm, name: e.target.value })} />
             <div className="flex gap-2">
-              <input type="number" min={0.5} step="0.5" className="input" placeholder="الكمية"
+              <input type="number" dir="ltr" min={0.5} step="0.5" className="input" placeholder="الكمية"
                 value={manualForm.quantity}
                 onChange={(e) => setManualForm({ ...manualForm, quantity: Number(e.target.value) })} />
               <select className="input" value={manualForm.unitId}

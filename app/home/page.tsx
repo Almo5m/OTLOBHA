@@ -73,23 +73,20 @@ export default async function HomePage() {
           <div className="alert alert-warning mb-6">{settings.maintenance_message}</div>
         )}
 
-        {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد. الصورة تيجي من
-            الإعدادات (home_banner_image_url) لو الأدمن رفعها، وإلا برجع
-            للرسمة الافتراضية */}
-        <section className="mb-10 flex flex-col items-center gap-6 text-center md:flex-row-reverse md:text-right">
-          <div className="h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-surfaceElevated sm:h-56 md:h-64 md:w-64">
-            {settings.home_banner_image_url ? (
-              <Image
-                src={settings.home_banner_image_url}
-                alt="المنيب جو"
-                width={500}
-                height={500}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <HeroIllustration className="h-full w-auto mx-auto" />
-            )}
+        {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد */}
+        {settings.home_banner_image_url && (
+          <div className="mb-8 overflow-hidden rounded-lg">
+            <Image
+              src={settings.home_banner_image_url}
+              alt="المنيب جو"
+              width={800}
+              height={300}
+              className="h-auto w-full object-cover"
+            />
           </div>
+        )}
+        <section className="mb-10 flex flex-col items-center gap-6 text-center md:flex-row-reverse md:text-right">
+          <HeroIllustration className="h-40 w-auto shrink-0 md:h-52" />
           <div>
             <span className="badge badge-neutral mb-3 inline-flex">
               <Icon name="location" size={13} />

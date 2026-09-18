@@ -29,8 +29,8 @@
   --color-accent-neon: #E3B84E;
 
   /* Brand (احتياطي لتوافق الكود القديم) — نفس الأسود المحايد الآن */
-  --color-brand: #131315;
-  --color-brand-dark: #000000;
+  --color-brand: #B8470D;
+  --color-brand-dark: #8F3708;
 
   /* Semantic — لاحظ إن Warning اتحول لبرتقالي محروق عشان يتمايز بوضوح عن الذهبي الجديد */
   --color-success: #229A5B;
@@ -77,8 +77,8 @@
   --color-accent-soft: #3A2F14;
   --color-accent-neon: #F0CC6E;
 
-  --color-brand: #F2F2F3;
-  --color-brand-dark: #FFFFFF;
+  --color-brand: #F0B04A;
+  --color-brand-dark: #FFC15C;
 
   --color-success: #3FCB7C;
   --color-warning: #E08A3E;
@@ -131,7 +131,7 @@ body {
 
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
-  background-color: var(--color-ink);
+  background-color: var(--color-brand);
   color: var(--color-ink-contrast);
 }
 .btn-primary:hover { filter: brightness(1.12); }
@@ -140,7 +140,7 @@ body {
 
 .btn-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-all duration-base;
-  border: 1.5px solid var(--color-ink);
+  border: 1.5px solid var(--color-brand);
   color: var(--color-text-primary);
   background-color: transparent;
 }

@@ -41,7 +41,7 @@ export default function ProductForm({ categories, units }: { categories: any[]; 
           {units.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
         </select>
       </div>
-      <input type="number" className="input" placeholder="آخر سعر معروف (تقريبي)" value={form.price}
+      <input type="number" dir="ltr" className="input" placeholder="آخر سعر معروف (تقريبي)" value={form.price}
         onChange={(e) => setForm({ ...form, price: e.target.value })} />
       <ImageUploadField onUploaded={(url) => setForm({ ...form, imageUrl: url })} />
       {error && <p className="text-sm text-error">{error}</p>}

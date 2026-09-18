@@ -6,34 +6,53 @@ import AdminSidebar from "./AdminSidebar";
 import ThemeToggle from "./theme/ThemeToggle";
 import Icon from "./Icon";
 
-// مجموعات منطقية بدل صف واحد مسطّح فيه كل الصفحات بنفس الأهمية —
-// كل مجموعة مفصولة بخط رفيع بدل ما تبقى كل الروابط متساوية بصريًا.
+type NavItem = { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"]; superOnly?: boolean };
+
+// مجموعات منطقية بعنوان واضح لكل مجموعة — بتظهر كعناوين فرعية في القائمة
+// الجانبية عشان التنقل يبقى منظم بدل قايمة طويلة مسطّحة.
 // superOnly: الرابط ده ميظهرش لـBusiness Admin، Super Admin بس.
-const navGroups: { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"]; superOnly?: boolean }[][] = [
-  [{ href: "/admin/dashboard", label: "الرئيسية", icon: "dashboard" }],
-  [
-    { href: "/admin/orders", label: "الطلبات", icon: "orders" },
-    { href: "/admin/customers", label: "العملاء", icon: "customer" },
-    { href: "/admin/agents", label: "المندوبين", icon: "agent" }
-  ],
-  [
-    { href: "/admin/products", label: "المنتجات", icon: "products" },
-    { href: "/admin/categories", label: "التصنيفات", icon: "market", superOnly: true }
-  ],
-  [
-    { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
-    { href: "/admin/debts", label: "الديون", icon: "debt" },
-    { href: "/admin/discounts", label: "الخصومات", icon: "wallet" },
-    { href: "/admin/promotions", label: "العروض", icon: "rating" },
-    { href: "/admin/reports", label: "التقارير", icon: "reports", superOnly: true }
-  ],
-  [
-    { href: "/admin/complaints", label: "الشكاوى", icon: "complaints" },
-    { href: "/admin/settings", label: "الإعدادات", icon: "settings", superOnly: true }
-  ]
+const navGroups: { label: string; items: NavItem[] }[] = [
+  { label: "الرئيسية", items: [{ href: "/admin/dashboard", label: "الرئيسية", icon: "dashboard" }] },
+  {
+    label: "العمليات",
+    items: [
+      { href: "/admin/orders", label: "الطلبات", icon: "orders" },
+      { href: "/admin/customers", label: "العملاء", icon: "customer" },
+      { href: "/admin/agents", label: "المندوبين", icon: "agent" },
+      { href: "/admin/complaints", label: "الشكاوى", icon: "complaints" }
+    ]
+  },
+  {
+    label: "المنتجات",
+    items: [
+      { href: "/admin/products", label: "المنتجات", icon: "products" },
+      { href: "/admin/categories", label: "التصنيفات", icon: "market", superOnly: true }
+    ]
+  },
+  {
+    label: "المالية والتسويق",
+    items: [
+      { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
+      { href: "/admin/debts", label: "الديون", icon: "debt" },
+      { href: "/admin/discounts", label: "الخصومات", icon: "wallet" },
+      { href: "/admin/promotions", label: "العروض", icon: "rating" },
+      { href: "/admin/reports", label: "التقارير", icon: "reports", superOnly: true }
+    ]
+  },
+  { label: "الإعدادات", items: [{ href: "/admin/settings", label: "الإعدادات", icon: "settings", superOnly: true }] }
 ];
 
-const superLinks: { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"] }[] = [
+// أكتر 5 أقسام استخدامًا يوميًا — ثابتين في الـnavbar عشان يوصلهم بضغطة واحدة
+// من غير ما يفتح القائمة الجانبية
+const pinnedLinks: NavItem[] = [
+  { href: "/admin/dashboard", label: "الرئيسية", icon: "dashboard" },
+  { href: "/admin/orders", label: "الطلبات", icon: "orders" },
+  { href: "/admin/products", label: "المنتجات", icon: "products" },
+  { href: "/admin/customers", label: "العملاء", icon: "customer" },
+  { href: "/admin/agents", label: "المندوبين", icon: "agent" }
+];
+
+const superLinks: NavItem[] = [
   { href: "/super/users", label: "المستخدمين", icon: "account" },
   { href: "/super/policies", label: "السياسات", icon: "invoice" },
   { href: "/super/commission", label: "العمولة", icon: "wallet" },
@@ -47,11 +66,10 @@ export default async function AdminNav() {
   const { data: profile } = await supabase.from("users").select("role,full_name").eq("id", user?.id).single();
   const isSuperAdmin = profile?.role === "super_admin";
 
-  // Business Admin ميشوفش روابط superOnly (التصنيفات والإعدادات) خالص —
-  // المجموعة اللي تفضى منها بتتشال عشان مايفضلش خط فاصل من غير حاجة تحته
+  // Business Admin ميشوفش روابط superOnly (التصنيفات والإعدادات والتقارير)
   const visibleGroups = navGroups
-    .map((group) => group.filter((item) => isSuperAdmin || !item.superOnly))
-    .filter((group) => group.length > 0);
+    .map((group) => ({ ...group, items: group.items.filter((item) => isSuperAdmin || !item.superOnly) }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <header className="sticky top-0 z-20 border-b border-borderc bg-bg/90 backdrop-blur">
@@ -81,10 +99,9 @@ export default async function AdminNav() {
           </div>
         </div>
 
-        {/* أهم رابطين بس ثابتين في الـnavbar — الباقي كله في القائمة الجانبية */}
-        <nav className="flex items-center gap-1">
-          <AdminNavLink href="/admin/dashboard" label="الرئيسية" iconName="dashboard" />
-          <AdminNavLink href="/admin/orders" label="الطلبات" iconName="orders" />
+        {/* أكتر 5 أقسام استخدامًا ثابتين هنا — الباقي كله في القائمة الجانبية */}
+        <nav className="scrollbar-none -mx-1 flex items-center gap-1 overflow-x-auto px-1">
+          {pinnedLinks.map((l) => <AdminNavLink key={l.href} href={l.href} label={l.label} iconName={l.icon} />)}
         </nav>
       </div>
     </header>

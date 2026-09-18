@@ -30,7 +30,7 @@ export default function AddToCartButton({
   return (
     <div className="flex items-center gap-2">
       <input
-        type="number" min={1} step="0.5" value={quantity}
+        type="number" dir="ltr" min={1} step="0.5" value={quantity}
         onChange={(e) => setQuantity(Number(e.target.value))}
         className="w-16 rounded-sm border border-line px-2 py-1.5 text-center text-sm"
       />

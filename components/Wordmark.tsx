@@ -50,10 +50,6 @@ export default function Wordmark({
     );
   }
 
-  if (logoUrl) {
-    return <img src={logoUrl} alt="المنيب جو" className={`h-9 w-auto shrink-0 ${className}`} />;
-  }
-
   const textColorClass =
     variant === "onDark" ? "text-white" : variant === "onLight" ? "text-[#131315]" : variant === "mono" ? "text-current" : "text-textPrimary";
 
@@ -64,9 +60,13 @@ export default function Wordmark({
 
   return (
     <span className={`inline-flex items-center gap-2 whitespace-nowrap ${className}`} aria-label="المنيب جو">
-      <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold ${monogramClass}`}>
-        م
-      </span>
+      {logoUrl ? (
+        <img src={logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-xl object-cover" />
+      ) : (
+        <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold ${monogramClass}`}>
+          م
+        </span>
+      )}
       <span className={`text-2xl font-black leading-none tracking-tight ${textColorClass}`}>المنيب جو</span>
     </span>
   );

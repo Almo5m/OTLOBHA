@@ -70,7 +70,7 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
                 متوفر
               </label>
               {state[item.id].available && (
-                <input type="number" placeholder="السعر الفعلي" className="input"
+                <input type="number" dir="ltr" placeholder="السعر الفعلي" className="input"
                   value={state[item.id].price}
                   onChange={(e) => setState({ ...state, [item.id]: { ...state[item.id], price: e.target.value } })} />
               )}
