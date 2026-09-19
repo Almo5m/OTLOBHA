@@ -32,9 +32,18 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
   async function finishShopping() {
     setLoading(true);
     setError(null);
-    const { error } = await supabase.rpc("submit_for_invoice", { p_order_id: orderId });
+    const { data: invoiceId, error } = await supabase.rpc("submit_for_invoice", { p_order_id: orderId });
+    if (error) { setLoading(false); setError(error.message); return; }
+
+    // المندوب بقى يقدر يعتمد فاتورته بنفسه على طول، من غير ما ينتظر مراجعة
+    // الأدمن — خطوة واحدة بدل اتنين
+    const { error: approveError } = await supabase.rpc("approve_invoice", { p_invoice_id: invoiceId });
     setLoading(false);
-    if (error) { setError(error.message); return; }
+    if (approveError) {
+      // الفاتورة اتسجلت لكن الاعتماد فشل (نادر) — الأدمن يقدر يعتمدها يدويًا
+      setError("تم تسجيل الفاتورة، لكن حصل خطأ أثناء اعتمادها تلقائيًا: " + approveError.message);
+      return;
+    }
     router.push("/agent/dashboard");
   }
 
@@ -83,7 +92,7 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
       {error && <p className="text-sm text-error">{error}</p>}
 
       <button onClick={finishShopping} disabled={!allResolved || loading} className="btn-primary w-full">
-        إنهاء الشراء وتجهيز الفاتورة
+        إنهاء الشراء واعتماد الفاتورة
       </button>
 
       <div className="card">

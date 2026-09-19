@@ -8,6 +8,7 @@ import Wordmark from "@/components/Wordmark";
 import PasswordInput from "@/components/PasswordInput";
 import ContactSupportLink from "@/components/ContactSupportLink";
 import Icon from "@/components/Icon";
+import { recordSession } from "@/lib/record-session";
 
 const ROLE_HOME: Record<string, string> = {
   customer: "/home",
@@ -42,6 +43,9 @@ export default function LoginForm() {
       return;
     }
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) recordSession(user.id);
+
     // لو العميل كان جاي من خطوة في الطلب (زي متابعة الدفع)، نرجّعه لنفس
     // المكان بدل ما نوديه للصفحة الرئيسية — تجربة متصلة وليست منقطعة
     if (returnTo) {
@@ -50,7 +54,6 @@ export default function LoginForm() {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
     const { data: profile } = await supabase.from("users").select("role").eq("id", user?.id).single();
 
     router.refresh();

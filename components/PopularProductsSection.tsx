@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "./Icon";
 import IconBadge from "./IconBadge";
@@ -14,6 +15,7 @@ type PopularProduct = {
   last_known_price: number;
   unit_id: string;
   unit_name: string;
+  slug: string;
 };
 
 export default function PopularProductsSection() {
@@ -38,12 +40,14 @@ export default function PopularProductsSection() {
           ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-44 w-36 shrink-0 rounded-lg" />)
           : products.map((p) => (
               <div key={p.product_id} className="card flex w-36 shrink-0 flex-col items-center gap-2 text-center">
-                {p.image_url ? (
-                  <Image src={p.image_url} alt={p.name} width={56} height={56} className="rounded-md object-cover" />
-                ) : (
-                  <IconBadge name="products" />
-                )}
-                <p className="line-clamp-2 text-sm font-medium">{p.name}</p>
+                <Link href={`/product/${encodeURIComponent(p.slug)}`}>
+                  {p.image_url ? (
+                    <Image src={p.image_url} alt={p.name} width={56} height={56} className="rounded-md object-cover" />
+                  ) : (
+                    <IconBadge name="products" />
+                  )}
+                </Link>
+                <Link href={`/product/${encodeURIComponent(p.slug)}`} className="line-clamp-2 text-sm font-medium">{p.name}</Link>
                 <p className="numeric text-xs text-textSecondary">{p.last_known_price} ج.م / {p.unit_name}</p>
                 <AddToCartButton
                   type="catalog"

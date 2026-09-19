@@ -9,6 +9,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from("categories")
     .select("id")
     .eq("is_active", true);
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug")
+    .eq("status", "active");
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/home`, changeFrequency: "daily", priority: 1 },
@@ -22,5 +26,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7
   }));
 
-  return [...staticRoutes, ...categoryRoutes];
+  const productRoutes: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
+    url: `${SITE_URL}/product/${encodeURIComponent(p.slug)}`,
+    changeFrequency: "weekly",
+    priority: 0.5
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes];
 }

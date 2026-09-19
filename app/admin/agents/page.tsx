@@ -4,6 +4,7 @@ import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
 import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 const AVAILABILITY_LABELS: Record<string, { label: string; variant: "success" | "warning" | "neutral" }> = {
   available: { label: "متاح", variant: "success" },
@@ -27,6 +28,7 @@ export default async function AdminAgentsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["users", "agent_profiles"]} channelName="admin-agents-list" />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="agent" size={20} className="text-textSecondary" /> المندوبين

@@ -5,6 +5,7 @@ import { OrderStatusBadge } from "@/components/Badge";
 import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
 import Icon from "@/components/Icon";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminOrdersPage() {
   const supabase = createServerSupabase();
@@ -17,6 +18,7 @@ export default async function AdminOrdersPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["orders"]} channelName="admin-orders-list" />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="orders" size={20} className="text-textSecondary" /> الطلبات

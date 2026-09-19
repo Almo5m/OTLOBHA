@@ -24,6 +24,9 @@ export default function CustomerNav() {
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <Link href="/home"><Wordmark /></Link>
           <div className="flex items-center gap-1">
+            <Link href="/search" className="flex h-9 w-9 items-center justify-center rounded-full text-textSecondary hover:bg-surfaceElevated" aria-label="بحث">
+              <Icon name="search" size={19} />
+            </Link>
             <ThemeToggle />
             {/* روابط أفقية على الشاشات المتوسطة فأكبر بدل الـBottom Bar */}
             <nav className="hidden items-center gap-1 md:flex">

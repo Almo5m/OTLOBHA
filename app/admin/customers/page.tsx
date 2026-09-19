@@ -6,6 +6,7 @@ import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
 import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminCustomersPage() {
   const supabase = createServerSupabase();
@@ -18,6 +19,7 @@ export default async function AdminCustomersPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["users", "customer_discounts"]} channelName="admin-customers-list" />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="customer" size={20} className="text-textSecondary" /> العملاء

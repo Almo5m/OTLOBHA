@@ -4,6 +4,7 @@ import { Badge } from "@/components/Badge";
 import Icon from "@/components/Icon";
 import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminInvoicesPage() {
   const supabase = createServerSupabase();
@@ -18,6 +19,7 @@ export default async function AdminInvoicesPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["invoices"]} channelName="admin-invoices-list" />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="invoice" size={20} className="text-textSecondary" /> الفواتير

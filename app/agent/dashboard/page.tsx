@@ -6,6 +6,7 @@ import EmptyState from "@/components/EmptyState";
 import NoOrdersIllustration from "@/components/illustrations/NoOrdersIllustration";
 import IconBadge from "@/components/IconBadge";
 import Link from "next/link";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AgentDashboard() {
   const supabase = createServerSupabase();
@@ -25,6 +26,7 @@ export default async function AgentDashboard() {
   return (
     <>
       <AgentNav />
+      <RealtimeRefresher tables={["orders", "agent_profiles"]} channelName="agent-dashboard" />
       <main className="mx-auto max-w-2xl px-4 py-6">
         <div className="card mb-6 flex items-center justify-between">
           <span className="text-sm">حالتك الحالية</span>

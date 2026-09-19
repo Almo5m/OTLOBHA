@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Wordmark from "@/components/Wordmark";
 import PasswordInput from "@/components/PasswordInput";
+import { recordSession } from "@/lib/record-session";
 
 const EGYPT_PHONE_REGEX = /^01[0125][0-9]{8}$/;
 
@@ -56,6 +57,8 @@ export default function RegisterForm() {
         is_default: true
       });
     }
+
+    recordSession(data.user.id);
 
     setLoading(false);
     router.push(returnTo || "/home");

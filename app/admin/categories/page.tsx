@@ -4,17 +4,21 @@ import CategoryForm from "@/components/CategoryForm";
 import CategoryToggle from "@/components/CategoryToggle";
 import CategoryImageEditor from "@/components/CategoryImageEditor";
 import CategoryMoveButtons from "@/components/CategoryMoveButtons";
+import SubcategoryManager from "@/components/SubcategoryManager";
 import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminCategoriesPage() {
   const supabase = createServerSupabase();
   const { data: categories } = await supabase.from("categories").select("*").order("sort_order");
+  const { data: allSubcategories } = await supabase.from("product_subcategories").select("*").order("sort_order");
   const list = categories ?? [];
 
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["categories", "product_subcategories"]} channelName="admin-categories-list" />
       <main className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="market" size={20} className="text-textSecondary" /> التصنيفات
@@ -27,19 +31,25 @@ export default async function AdminCategoriesPage() {
 
         <div className="mt-6 space-y-2">
           {list.map((c, i) => (
-            <div key={c.id} className="card flex items-center gap-3 text-sm">
-              <CategoryMoveButtons
+            <div key={c.id} className="card text-sm">
+              <div className="flex items-center gap-3">
+                <CategoryMoveButtons
+                  categoryId={c.id}
+                  sortOrder={c.sort_order}
+                  prevSibling={i > 0 ? { id: list[i - 1].id, sort_order: list[i - 1].sort_order } : null}
+                  nextSibling={i < list.length - 1 ? { id: list[i + 1].id, sort_order: list[i + 1].sort_order } : null}
+                />
+                <CategoryImageEditor categoryId={c.id} imageUrl={c.image_url} />
+                <span className="flex-1 font-medium">{c.name}</span>
+                <Badge variant={c.is_active ? "success" : "neutral"}>
+                  {c.is_active ? "نشط" : "غير نشط"}
+                </Badge>
+                <CategoryToggle categoryId={c.id} isActive={c.is_active} />
+              </div>
+              <SubcategoryManager
                 categoryId={c.id}
-                sortOrder={c.sort_order}
-                prevSibling={i > 0 ? { id: list[i - 1].id, sort_order: list[i - 1].sort_order } : null}
-                nextSibling={i < list.length - 1 ? { id: list[i + 1].id, sort_order: list[i + 1].sort_order } : null}
+                subcategories={(allSubcategories ?? []).filter((s) => s.category_id === c.id)}
               />
-              <CategoryImageEditor categoryId={c.id} imageUrl={c.image_url} />
-              <span className="flex-1 font-medium">{c.name}</span>
-              <Badge variant={c.is_active ? "success" : "neutral"}>
-                {c.is_active ? "نشط" : "غير نشط"}
-              </Badge>
-              <CategoryToggle categoryId={c.id} isActive={c.is_active} />
             </div>
           ))}
           {list.length === 0 && <p className="text-sm text-textSecondary">لا توجد تصنيفات بعد.</p>}

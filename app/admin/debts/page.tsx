@@ -5,6 +5,7 @@ import { DebtStatusBadge } from "@/components/Badge";
 import Icon from "@/components/Icon";
 import EmptyState from "@/components/EmptyState";
 import SuccessIllustration from "@/components/illustrations/SuccessIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDebtsPage() {
   const supabase = createServerSupabase();
@@ -18,6 +19,7 @@ export default async function AdminDebtsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["debts"]} channelName="admin-debts-list" />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="debt" size={20} className="text-textSecondary" /> الديون

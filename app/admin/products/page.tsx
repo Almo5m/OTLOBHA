@@ -6,6 +6,7 @@ import Icon from "@/components/Icon";
 import IconBadge from "@/components/IconBadge";
 import { Badge } from "@/components/Badge";
 import Image from "next/image";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminProductsPage() {
   const supabase = createServerSupabase();
@@ -13,16 +14,18 @@ export default async function AdminProductsPage() {
     .from("products").select("*, categories(name), sale_units(name)").order("created_at", { ascending: false });
   const { data: categories } = await supabase.from("categories").select("id,name").eq("is_active", true);
   const { data: units } = await supabase.from("sale_units").select("id,name");
+  const { data: subcategories } = await supabase.from("product_subcategories").select("id,name,category_id");
 
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["products"]} channelName="admin-products-list" />
       <main className="mx-auto max-w-4xl px-4 py-6 lg:max-w-5xl">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="products" size={20} className="text-textSecondary" /> المنتجات
         </h1>
 
-        <ProductForm categories={categories ?? []} units={units ?? []} />
+        <ProductForm categories={categories ?? []} units={units ?? []} subcategories={subcategories ?? []} />
 
         <div className="mt-6 grid gap-2 lg:grid-cols-2">
           {(products ?? []).map((p: any) => (
@@ -40,7 +43,11 @@ export default async function AdminProductsPage() {
                 <Badge variant={p.status === "active" ? "success" : "neutral"}>
                   {p.status === "active" ? "نشط" : "موقوف"}
                 </Badge>
-                <ProductRowActions productId={p.id} status={p.status} price={p.last_known_price} />
+                <ProductRowActions
+                  productId={p.id} status={p.status} price={p.last_known_price}
+                  categoryId={p.category_id} subcategoryId={p.subcategory_id}
+                  subcategories={subcategories ?? []}
+                />
               </div>
             </div>
           ))}

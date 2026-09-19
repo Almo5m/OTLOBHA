@@ -4,12 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function ProductRowActions({ productId, status, price }: { productId: string; status: string; price: number }) {
+export default function ProductRowActions({
+  productId, status, price, categoryId, subcategoryId, subcategories
+}: { productId: string; status: string; price: number; categoryId: string; subcategoryId: string | null; subcategories: any[] }) {
   const supabase = createClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [newPrice, setNewPrice] = useState(price);
+
+  const availableSubcategories = subcategories.filter((s) => s.category_id === categoryId);
 
   async function toggleStatus() {
     setLoading(true);
@@ -26,8 +30,15 @@ export default function ProductRowActions({ productId, status, price }: { produc
     router.refresh();
   }
 
+  async function saveSubcategory(id: string) {
+    setLoading(true);
+    await supabase.from("products").update({ subcategory_id: id || null }).eq("id", productId);
+    setLoading(false);
+    router.refresh();
+  }
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       {editing ? (
         <div className="flex items-center gap-1">
           <input type="number" dir="ltr" className="w-20 rounded-sm border border-line px-1 py-0.5 text-sm"
@@ -36,6 +47,17 @@ export default function ProductRowActions({ productId, status, price }: { produc
         </div>
       ) : (
         <button onClick={() => setEditing(true)} className="text-xs text-primary underline">تعديل السعر</button>
+      )}
+      {availableSubcategories.length > 0 && (
+        <select
+          className="rounded-sm border border-line px-1.5 py-0.5 text-xs"
+          value={subcategoryId ?? ""}
+          disabled={loading}
+          onChange={(e) => saveSubcategory(e.target.value)}
+        >
+          <option value="">بدون تصنيف فرعي</option>
+          {availableSubcategories.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
       )}
       <button onClick={toggleStatus} disabled={loading} className="text-xs text-accent underline">
         {status === "active" ? "إيقاف المنتج" : "إعادة تفعيل"}

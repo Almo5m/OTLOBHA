@@ -4,6 +4,7 @@ import Link from "next/link";
 import { OrderStatusBadge } from "@/components/Badge";
 import EmptyState from "@/components/EmptyState";
 import NoOrdersIllustration from "@/components/illustrations/NoOrdersIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function OrdersPage() {
   const supabase = createServerSupabase();
@@ -15,6 +16,7 @@ export default async function OrdersPage() {
   return (
     <>
       <CustomerNav />
+      <RealtimeRefresher tables={["orders"]} channelName="customer-orders-list" />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:max-w-3xl md:pb-6 lg:max-w-4xl">
         <h1 className="mb-4 text-xl font-bold">طلباتي</h1>
         {(orders ?? []).length === 0 ? (

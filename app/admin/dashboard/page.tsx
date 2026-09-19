@@ -5,6 +5,7 @@ import RecentOrdersList from "@/components/RecentOrdersList";
 import AvailabilityToggle from "@/components/AvailabilityToggle";
 import Icon from "@/components/Icon";
 import Link from "next/link";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDashboard() {
   const supabase = createServerSupabase();
@@ -45,6 +46,7 @@ export default async function AdminDashboard() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["orders"]} channelName="admin-dashboard" />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>

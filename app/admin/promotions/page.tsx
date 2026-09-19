@@ -4,6 +4,7 @@ import PromotionForm from "@/components/PromotionForm";
 import DiscountToggle from "@/components/DiscountToggle";
 import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 const REWARD_LABELS: Record<string, string> = {
   free_delivery: "توصيل ببلاش",
@@ -21,6 +22,7 @@ export default async function AdminPromotionsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["promotions"]} channelName="admin-promotions-list" />
       <main className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="rating" size={20} className="text-textSecondary" /> العروض المشروطة

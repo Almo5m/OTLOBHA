@@ -4,6 +4,7 @@ import ComplaintStatusSelect from "@/components/ComplaintStatusSelect";
 import { ComplaintStatusBadge } from "@/components/Badge";
 import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminComplaintsPage() {
   const supabase = createServerSupabase();
@@ -15,6 +16,7 @@ export default async function AdminComplaintsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["complaints"]} channelName="admin-complaints-list" />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 text-xl font-bold">الشكاوى</h1>
         {(complaints ?? []).length === 0 ? (

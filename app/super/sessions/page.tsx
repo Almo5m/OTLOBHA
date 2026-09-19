@@ -1,5 +1,6 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 import Icon from "@/components/Icon";
 import RevokeSessionButton from "@/components/RevokeSessionButton";
 
@@ -14,6 +15,7 @@ export default async function SessionsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["user_sessions"]} channelName="super-sessions-list" />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold"><Icon name="settings" size={20} className="text-textSecondary" /> الجلسات النشطة</h1>
         <div className="space-y-2">

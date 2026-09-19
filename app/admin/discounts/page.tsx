@@ -4,6 +4,7 @@ import DiscountForm from "@/components/DiscountForm";
 import DiscountToggle from "@/components/DiscountToggle";
 import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
+import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDiscountsPage() {
   const supabase = createServerSupabase();
@@ -15,6 +16,7 @@ export default async function AdminDiscountsPage() {
   return (
     <>
       <AdminNav />
+      <RealtimeRefresher tables={["customer_discounts"]} channelName="admin-discounts-list" />
       <main className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="wallet" size={20} className="text-textSecondary" /> خصومات التوصيل
