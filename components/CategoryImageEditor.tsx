@@ -24,7 +24,7 @@ export default function CategoryImageEditor({ categoryId, imageUrl }: { category
   if (editing) {
     return (
       <div className="w-40 shrink-0">
-        <ImageUploadField onUploaded={handleUploaded} />
+        <ImageUploadField purpose="catalog" onUploaded={handleUploaded} />
         <button onClick={() => setEditing(false)} className="mt-1 text-xs text-textSecondary underline">إلغاء</button>
       </div>
     );

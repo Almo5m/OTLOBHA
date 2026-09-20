@@ -4,7 +4,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://almoneib-go.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: categories } = await supabase
     .from("categories")
     .select("id")

@@ -3,6 +3,8 @@
 -- إضافة slug لنتائج المنتجات الأكثر طلبًا عشان تقدر تتربط بصفحة المنتج
 -- =====================================================================
 
+drop function if exists public.get_popular_products(integer);
+
 create or replace function public.get_popular_products(p_limit integer default 8)
 returns table (
   product_id uuid,

@@ -7,7 +7,7 @@ import { Badge } from "@/components/Badge";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDiscountsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: discounts } = await supabase
     .from("customer_discounts")
     .select("*, users(full_name, phone)")

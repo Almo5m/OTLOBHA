@@ -6,13 +6,14 @@ import { createClient } from "@/lib/supabase/client";
 import Wordmark from "@/components/Wordmark";
 import PasswordInput from "@/components/PasswordInput";
 import { recordSession } from "@/lib/record-session";
+import { safeReturnPath } from "@/lib/auth/safe-return-path";
 
 const EGYPT_PHONE_REGEX = /^01[0125][0-9]{8}$/;
 
 export default function RegisterForm() {
   const router = useRouter();
   const supabase = createClient();
-  const returnTo = useSearchParams().get("returnTo");
+  const returnTo = safeReturnPath(useSearchParams().get("returnTo"), "");
   const [form, setForm] = useState({ fullName: "", phone: "", address: "", password: "", confirmPassword: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -43,9 +44,9 @@ export default function RegisterForm() {
 
     if (signUpError || !data.user) {
       setLoading(false);
-      setError(signUpError?.message.includes("registered")
-        ? "هذا الرقم مسجّل بالفعل"
-        : "حدث خطأ أثناء إنشاء الحساب");
+      // رسالة عامة دايمًا — رسالة مختلفة لو الرقم مسجّل بالفعل بتسمح لأي حد
+      // يخمّن أرقام عملاء حقيقيين بمحاولة تسجيل بيها ومراقبة الرد
+      setError("تعذّر إنشاء الحساب. تأكد من صحة البيانات، أو سجّل الدخول لو عندك حساب بالفعل.");
       return;
     }
 
@@ -58,7 +59,7 @@ export default function RegisterForm() {
       });
     }
 
-    recordSession(data.user.id);
+    await recordSession();
 
     setLoading(false);
     router.push(returnTo || "/home");

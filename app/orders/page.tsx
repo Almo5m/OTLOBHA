@@ -7,7 +7,7 @@ import NoOrdersIllustration from "@/components/illustrations/NoOrdersIllustratio
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function OrdersPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: orders } = await supabase
     .from("orders")
     .select("id,order_number,status,created_at")

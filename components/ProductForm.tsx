@@ -52,7 +52,7 @@ export default function ProductForm({ categories, units, subcategories }: { cate
       )}
       <input type="number" dir="ltr" className="input" placeholder="آخر سعر معروف (تقريبي)" value={form.price}
         onChange={(e) => setForm({ ...form, price: e.target.value })} />
-      <ImageUploadField onUploaded={(url) => setForm({ ...form, imageUrl: url })} />
+      <ImageUploadField purpose="catalog" onUploaded={(url) => setForm({ ...form, imageUrl: url })} />
       {error && <p className="text-sm text-error">{error}</p>}
       <button onClick={handleSubmit} disabled={loading} className="btn-primary">إضافة المنتج</button>
     </div>

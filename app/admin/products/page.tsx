@@ -2,14 +2,13 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import ProductForm from "@/components/ProductForm";
 import ProductRowActions from "@/components/ProductRowActions";
+import ProductImageEditor from "@/components/ProductImageEditor";
 import Icon from "@/components/Icon";
-import IconBadge from "@/components/IconBadge";
 import { Badge } from "@/components/Badge";
-import Image from "next/image";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminProductsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: products } = await supabase
     .from("products").select("*, categories(name), sale_units(name)").order("created_at", { ascending: false });
   const { data: categories } = await supabase.from("categories").select("id,name").eq("is_active", true);
@@ -30,11 +29,7 @@ export default async function AdminProductsPage() {
         <div className="mt-6 grid gap-2 lg:grid-cols-2">
           {(products ?? []).map((p: any) => (
             <div key={p.id} className="card flex items-center gap-3 text-sm animate-fadeIn">
-              {p.image_url ? (
-                <Image src={p.image_url} alt={p.name} width={44} height={44} className="rounded-md object-cover" />
-              ) : (
-                <IconBadge name="products" size="sm" />
-              )}
+              <ProductImageEditor productId={p.id} imageUrl={p.image_url} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{p.name}</p>
                 <p className="numeric truncate text-textSecondary">{p.categories?.name} — {p.last_known_price} ج.م / {p.sale_units?.name}</p>

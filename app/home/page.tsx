@@ -33,7 +33,7 @@ const HOW_IT_WORKS = [
 ];
 
 export default async function HomePage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://almoneib-go.vercel.app";
   const localBusinessSchema = {

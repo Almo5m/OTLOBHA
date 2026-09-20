@@ -87,7 +87,7 @@ export default function PaymentProofUpload({
         <label className="label">رقم المُحوِّل (المحفظة/الحساب اللي حوّلت منه)</label>
         <input className="input" value={senderNumber} onChange={(e) => setSenderNumber(e.target.value)} />
       </div>
-      <ImageUploadField onUploaded={setImageUrl} />
+      <ImageUploadField purpose="payment-proof" onUploaded={setImageUrl} />
     </div>
   );
 }

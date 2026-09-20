@@ -7,7 +7,7 @@ import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllus
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminComplaintsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: complaints } = await supabase
     .from("complaints")
     .select("*, users!complaints_customer_id_fkey(full_name,phone)")

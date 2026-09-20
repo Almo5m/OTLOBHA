@@ -1,26 +1,32 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { buildUploadParams, isUploadPurpose, signUploadParams, UPLOAD_PURPOSES } from "@/lib/cloudinary/sign";
 
-// يُستخدم هذا المسار فقط للحصول على توقيع آمن لرفع صورة مباشرة من
-// المتصفح إلى Cloudinary، دون كشف CLOUDINARY_API_SECRET للعميل إطلاقًا.
-// مفتوح لأي مستخدم مسجّل دخول (عملاء أيضًا) لأنه مطلوب الآن لرفع
-// صورة إثبات التحويل عند الدفع الإلكتروني، وليس للإداريين فقط.
-export async function POST() {
-  const supabase = createServerSupabase();
+export async function POST(request: Request) {
+  const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
 
-  const timestamp = Math.round(Date.now() / 1000);
-  const paramsToSign = `timestamp=${timestamp}`;
-  const signature = crypto
-    .createHash("sha1")
-    .update(paramsToSign + process.env.CLOUDINARY_API_SECRET)
-    .digest("hex");
+  const body = await request.json().catch(() => null);
+  const purpose = body?.purpose;
+  if (!isUploadPurpose(purpose)) return NextResponse.json({ error: "طلب غير صالح" }, { status: 400 });
+
+  const { data: profile } = await supabase.from("users").select("role,status").eq("id", user.id).single();
+  const allowedRoles: readonly string[] = UPLOAD_PURPOSES[purpose].roles;
+  if (!profile || profile.status !== "active" || !allowedRoles.includes(profile.role)) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  }
+
+  const { data: withinLimit } = await supabase.rpc("consume_rate_limit", { p_action: "cloudinary_sign" });
+  if (withinLimit !== true) {
+    return NextResponse.json({ error: "محاولات كثيرة، حاول مرة أخرى بعد قليل" }, { status: 429 });
+  }
+
+  const params = buildUploadParams(purpose, Math.round(Date.now() / 1000));
 
   return NextResponse.json({
-    timestamp,
-    signature,
+    ...params,
+    signature: signUploadParams(params, process.env.CLOUDINARY_API_SECRET!),
     apiKey: process.env.CLOUDINARY_API_KEY,
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
   });

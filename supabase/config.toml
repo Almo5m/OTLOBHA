@@ -1,7 +1,7 @@
 project_id = "المفروض تتحط هنا بعد supabase link — شوف تعليمات الربط"
 
 [functions.send-push]
-# الفانكشن دي بتتنادى من Database Webhook على جدول notification_log، مش من
-# المستخدم مباشرة، فمفيش JWT حقيقي بيوصلها من العميل. لو حبيت تأمين إضافي،
-# ممكن تحط Header سري ثابت في إعداد الـWebhook نفسه وتتحقق منه جوه الكود.
+# الدالة دي بتتنادى من Database Webhook فقط، فمفيش JWT من العميل. الحماية
+# الفعلية: Header اسمه x-webhook-secret لازم يطابق السر SEND_PUSH_WEBHOOK_SECRET
+# (راجع README) — من غيره الدالة بترفض أي طلب.
 verify_jwt = false

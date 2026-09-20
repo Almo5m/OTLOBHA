@@ -61,7 +61,7 @@ const superLinks: NavItem[] = [
 ];
 
 export default async function AdminNav() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("users").select("role,full_name").eq("id", user?.id).single();
   const isSuperAdmin = profile?.role === "super_admin";

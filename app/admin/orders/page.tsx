@@ -8,7 +8,7 @@ import Icon from "@/components/Icon";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminOrdersPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: orders } = await supabase
     .from("orders")
     .select("id,order_number,status,created_at,payment_method,users!orders_customer_id_fkey(full_name,phone)")

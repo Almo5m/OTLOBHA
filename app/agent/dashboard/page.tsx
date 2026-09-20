@@ -9,7 +9,7 @@ import Link from "next/link";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AgentDashboard() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase.from("agent_profiles").select("*").eq("user_id", user?.id).single();

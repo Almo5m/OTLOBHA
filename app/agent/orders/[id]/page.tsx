@@ -4,14 +4,15 @@ import ShoppingForm from "@/components/ShoppingForm";
 import DeliveryActions from "@/components/DeliveryActions";
 import Icon from "@/components/Icon";
 
-export default async function AgentOrderDetailPage({ params }: { params: { id: string } }) {
-  const supabase = createServerSupabase();
+export default async function AgentOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createServerSupabase();
 
-  const { data: order } = await supabase.from("orders").select("*").eq("id", params.id).single();
+  const { data: order } = await supabase.from("orders").select("*").eq("id", id).single();
   const { data: items } = await supabase
     .from("order_items")
     .select("*, products(name), sale_units(name)")
-    .eq("order_id", params.id);
+    .eq("order_id", id);
   const { data: customer } = order
     ? await supabase.from("users").select("full_name,phone").eq("id", order.customer_id).single()
     : { data: null };

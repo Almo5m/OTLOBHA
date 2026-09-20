@@ -13,7 +13,7 @@ const REWARD_LABELS: Record<string, string> = {
 };
 
 export default async function AdminPromotionsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: promotions } = await supabase
     .from("promotions")
     .select("*, promotion_customers(customer_id)")

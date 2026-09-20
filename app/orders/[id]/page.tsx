@@ -10,24 +10,25 @@ import Link from "next/link";
 import ContactSupportLink from "@/components/ContactSupportLink";
 import OrderRealtimeRefresher from "@/components/OrderRealtimeRefresher";
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
-  const supabase = createServerSupabase();
+export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createServerSupabase();
 
-  const { data: order } = await supabase.from("orders").select("*").eq("id", params.id).single();
+  const { data: order } = await supabase.from("orders").select("*").eq("id", id).single();
   const { data: items } = await supabase
     .from("order_items")
     .select("*, products(name), sale_units(name)")
-    .eq("order_id", params.id);
+    .eq("order_id", id);
   const { data: invoice } = await supabase
     .from("invoices")
     .select("*")
-    .eq("order_id", params.id)
+    .eq("order_id", id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
-  const { data: rating } = await supabase.from("ratings").select("id").eq("order_id", params.id).maybeSingle();
+  const { data: rating } = await supabase.from("ratings").select("id").eq("order_id", id).maybeSingle();
   const { data: paymentProof } = order?.payment_method !== "cash"
-    ? await supabase.from("payment_proofs").select("status").eq("order_id", params.id).maybeSingle()
+    ? await supabase.from("payment_proofs").select("status").eq("order_id", id).maybeSingle()
     : { data: null };
 
   if (!order) {
@@ -37,7 +38,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   return (
     <>
       <CustomerNav />
-      <OrderRealtimeRefresher orderId={params.id} />
+      <OrderRealtimeRefresher orderId={id} />
       <main className="mx-auto max-w-2xl px-4 py-6 pb-24 md:max-w-3xl md:pb-6 lg:max-w-4xl">
         <h1 className="mb-1 text-xl font-bold">طلب {order.order_number}</h1>
         <p className="numeric mb-6 text-sm text-textSecondary">

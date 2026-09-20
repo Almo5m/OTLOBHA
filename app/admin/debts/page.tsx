@@ -8,7 +8,7 @@ import SuccessIllustration from "@/components/illustrations/SuccessIllustration"
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDebtsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: debts } = await supabase
     .from("debts")
     .select("*, users!debts_customer_id_fkey(full_name,phone), debt_settlements(amount_paid)")

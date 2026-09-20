@@ -1,36 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-// خرائط المسارات المسموحة لكل دور — أي مسار خارج قائمة الدور يُعاد توجيهه
-const ROLE_HOME: Record<string, string> = {
-  customer: "/home",
-  delivery_agent: "/agent/dashboard",
-  business_admin: "/admin/dashboard",
-  super_admin: "/admin/dashboard"
-};
+import { homeFor, pathBelongsToRole } from "@/lib/auth/roles";
 
 // المسارات دي مفتوحة تمامًا للزائر بدون تسجيل دخول — تصفّح حر للموقع
 const PUBLIC_PREFIXES = ["/", "/home", "/categories", "/products", "/cart", "/legal"];
 
 function isPublicRoute(pathname: string) {
   return PUBLIC_PREFIXES.some((p) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/")));
-}
-
-function pathBelongsToRole(pathname: string, role: string) {
-  // الإعدادات والتصنيفات والتقارير بقوا Super Admin بس — لازم يتفحصوا قبل
-  // الفحص العام لـ/admin عشان الأولوية تكون للمسار الأكثر تحديدًا
-  if (
-    pathname.startsWith("/admin/settings") ||
-    pathname.startsWith("/admin/categories") ||
-    pathname.startsWith("/admin/reports")
-  ) {
-    return role === "super_admin";
-  }
-  if (pathname.startsWith("/admin")) return role === "business_admin" || role === "super_admin";
-  if (pathname.startsWith("/super")) return role === "super_admin";
-  if (pathname.startsWith("/agent")) return role === "delivery_agent";
-  // مسارات العميل: كل ما تبقى خارج admin/agent/super وخارج auth
-  return true;
 }
 
 export async function middleware(request: NextRequest) {
@@ -80,7 +56,10 @@ export async function middleware(request: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  if (!profile) return response;
+  if (!profile) {
+    if (isAuthRoute || publicRoute) return response;
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   if (profile.status !== "active") {
     if (pathname !== "/blocked") return NextResponse.redirect(new URL("/blocked", request.url));
@@ -88,11 +67,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute) {
-    return NextResponse.redirect(new URL(ROLE_HOME[profile.role] ?? "/home", request.url));
+    return NextResponse.redirect(new URL(homeFor(profile.role), request.url));
   }
 
   if (!pathBelongsToRole(pathname, profile.role) && !publicRoute) {
-    return NextResponse.redirect(new URL(ROLE_HOME[profile.role] ?? "/home", request.url));
+    return NextResponse.redirect(new URL(homeFor(profile.role), request.url));
   }
 
   return response;

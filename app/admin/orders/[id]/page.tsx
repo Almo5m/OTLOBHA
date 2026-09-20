@@ -20,23 +20,24 @@ const EVENT_BY_STATUS: Record<string, { key: string; label: string }> = {
   canceled_by_customer: { key: "order_canceled", label: "إرسال رسالة: تأكيد الإلغاء" }
 };
 
-export default async function AdminOrderDetailPage({ params }: { params: { id: string } }) {
-  const supabase = createServerSupabase();
+export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: order } = await supabase.from("orders").select("*").eq("id", params.id).single();
+  const { data: order } = await supabase.from("orders").select("*").eq("id", id).single();
   const { data: customer } = order
     ? await supabase.from("users").select("full_name,phone").eq("id", order.customer_id).single()
     : { data: null };
   const { data: items } = await supabase
     .from("order_items")
     .select("*, products(name), sale_units(name)")
-    .eq("order_id", params.id);
+    .eq("order_id", id);
   const { data: invoice } = await supabase
-    .from("invoices").select("*").eq("order_id", params.id)
+    .from("invoices").select("*").eq("order_id", id)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   const { data: paymentProof } = order?.payment_method !== "cash"
-    ? await supabase.from("payment_proofs").select("*").eq("order_id", params.id).maybeSingle()
+    ? await supabase.from("payment_proofs").select("*").eq("order_id", id).maybeSingle()
     : { data: null };
 
   if (!order) return <main className="p-6">الطلب غير موجود.</main>;

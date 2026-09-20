@@ -3,7 +3,7 @@ import AdminNav from "@/components/AdminNav";
 import Icon from "@/components/Icon";
 
 export default async function AuditLogPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: logs } = await supabase
     .from("audit_log")
     .select("*")

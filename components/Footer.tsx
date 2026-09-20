@@ -3,7 +3,7 @@ import Link from "next/link";
 import Wordmark from "./Wordmark";
 
 export default async function Footer() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: policies } = await supabase
     .from("policies")
     .select("type, version")

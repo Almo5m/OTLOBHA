@@ -9,7 +9,7 @@ import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllus
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminCustomersPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: customers } = await supabase
     .from("users")
     .select("id,full_name,phone,status,created_at")

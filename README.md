@@ -1,6 +1,6 @@
 # المنيب جو — almoneib-go
 
-خدمة توصيل محلية (المنيب — مصر). Next.js 14 (App Router) + Supabase (Postgres/Auth/RLS) + Cloudinary + Vercel.
+خدمة توصيل محلية (المنيب — مصر). Next.js 15 (App Router) + Supabase (Postgres/Auth/RLS) + Cloudinary + Vercel.
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### أ) Supabase
 1. أنشئ مشروع جديد على [supabase.com](https://supabase.com).
-2. من **SQL Editor**، شغّل كل ملفات `supabase/migrations/` **بترتيبها الرقمي** (0001 → 0022) — أو استخدم `supabase db push` عبر الـ CLI بعد `supabase link`.
+2. من **SQL Editor**، شغّل كل ملفات `supabase/migrations/` **بترتيبها الرقمي** (0001 → 0046) — أو استخدم `supabase db push` عبر الـ CLI بعد `supabase link`.
    > لو كنت طبّقت المشروع قبل كده لحد 0021: يكفي تشغّل ملف `0022_fix_agent_profiles_insert_policy.sql` بس (الجديد) فوق قاعدة البيانات الحالية.
    > لو كنت طبّقت لحد 0022: شغّل كمان `0023_popular_products_for_customers.sql` (قسم "منتجات ناس كتير طلبتها" في الصفحة الرئيسية).
    > لو كنت طبّقت لحد 0023: شغّل كمان `0024_decline_shopping_assignment.sql` و`0025_online_payment_proof.sql` (رفض المندوب بسبب + نظام الدفع الأونلاين).
@@ -197,8 +197,8 @@ supabase/functions/send-push    — Edge Function لإرسال Push فعليًا
 
 ## 7. المتبقي / يحتاج إكمالًا قبل الإطلاق الفعلي ⚠️
 
-- **ربط Edge Function الخاصة بالـ Push فعليًا**: أنشئ Database Webhook من لوحة Supabase (Database → Webhooks) على جدول `notification_log`، الحدث `INSERT`، الشرط `channel = 'push'`، ووجّهه لدالة `send-push`. حاليًا الجدول يُملأ لكن لا شيء يستدعي الدالة تلقائيًا بعد.
-- **اختبارات تلقائية (Unit/E2E)** — لم تُبنَ بعد، موصى بها بشدة قبل أي إطلاق فعلي حسب استراتيجية الاختبار في تقرير التحليل الأصلي.
+- **ربط Edge Function الخاصة بالـ Push فعليًا**: أنشئ Database Webhook من لوحة Supabase (Database → Webhooks) على جدول `notification_log`، الحدث `INSERT`، الشرط `channel = 'push'`، ووجّهه لدالة `send-push`، **وأضف للـ Webhook الـ Header `x-webhook-secret` بنفس قيمة السر `SEND_PUSH_WEBHOOK_SECRET`** (خطوات تعيين السر في قسم الأمان 9.2). الدالة بترفض أي طلب من غير السر ده.
+- **اختبارات E2E للواجهة** — لم تُبنَ بعد. اختبارات الوحدة للمنطق الأمني موجودة في `tests/` (شغّلها بـ `npm test`).
 - **أيقونات PWA** (`/public/icon-192.png`, `/public/icon-512.png`) غير موجودة فعليًا — أضف تصميم الشعار عند توفره (جزء من مرحلة الثيم القادمة).
 - ✅ ~~إنشاء أول Super Admin يدويًا~~ — أصبح ممكنًا الآن ترقية أي حساب من `/super/users` بعد إنشاء أول Super Admin واحد فقط يدويًا (خطوة لمرة واحدة لا يمكن تفاديها لأسباب أمنية).
 - ✅ ~~الشروط والأحكام~~ — أصبحت تُضاف من `/super/policies` مباشرة بدل SQL Editor.
@@ -207,3 +207,36 @@ supabase/functions/send-push    — Edge Function لإرسال Push فعليًا
 
 ## 8. الوثيقة الكاملة للتحليل والتصميم
 راجع تقرير "المنيب جو - تقرير التحليل والتصميم" المُسلَّم سابقًا لكل تفاصيل القرارات التجارية والأمنية والـ Edge Cases الكاملة التي بُني عليها هذا الكود.
+
+---
+
+## 9. الأمان
+
+### 9.1 ما يفعله ملف `0046_security_hardening.sql`
+- سحب صلاحية تنفيذ كل دوال قاعدة البيانات من الجمهور (`public`/`anon`/`authenticated`) ثم منح صريح لكل دالة للأدوار المسموحة فقط. الدوال الداخلية (`fn_transition_order`, `fn_queue_push`, `fn_log_audit`, `fn_create_cancellation_debt`, `assign_next_agent`, `fn_pick_agent`) لا يستدعيها أي دور من الواجهة.
+- **أي دالة جديدة تُضاف لاحقًا لازم تاخد `grant execute` صريح**، وإلا الواجهة مش هتقدر تستدعيها (ده مقصود).
+- إغلاق الكتابة المباشرة على `orders` و`order_items` و`audit_log` و`password_reset_tokens` — كل الكتابة عبر دوال RPC.
+- منع تعديل `role` و`status` و`phone` في `users` مباشرة من المستخدم نفسه، ومنع تعديل عداد الطلبات النشطة للمندوب.
+- استرجاع كلمة المرور: عميل ← أي إداري، مندوب/Business Admin ← Super Admin فقط، Super Admin ← غير متاح من هذا المسار. الرمز يُلغى بعد الاستخدام وتُنهى كل جلسات المستخدم.
+- حد أقصى للطلبات النشطة لكل عميل (الافتراضي 5). لتغييره: `insert into public.platform_settings (key, value) values ('max_active_orders_per_customer', '8'::jsonb) on conflict (key) do update set value = excluded.value;`
+- الجلسات في `/super/sessions` صارت حقيقية: الإنهاء بيحذف الجلسة من Supabase Auth، وحظر المستخدم بينهي كل جلساته.
+
+### 9.2 خطوات يدوية مطلوبة بعد النشر
+1. **سر الـ Webhook:** اعمل سر عشوائي طويل ثم:
+   ```
+   supabase secrets set SEND_PUSH_WEBHOOK_SECRET=<السر>
+   supabase functions deploy send-push
+   ```
+   وأضف نفس القيمة كـ Header باسم `x-webhook-secret` في إعداد الـ Database Webhook.
+2. **Supabase → Authentication:** اضبط الحد الأدنى لطول كلمة المرور على 8 أو أكثر، وراجع حدود المحاولات (Rate Limits)، وقلّل مدة صلاحية الـ JWT (مثلاً 900–3600 ثانية) لأن إنهاء الجلسة بيقطع التجديد وليس التوكن الحالي.
+3. **Cloudinary:** حدّد الحد الأقصى لحجم الصور من إعدادات الحساب أو الـ Upload Preset — الحد ده مش ممكن يتفرض من الكود.
+4. بعد أي نشر، افتح الموقع وراجع الكونسول للتأكد إن سياسة الـ CSP (في `next.config.js`) مش بتمنع أي مورد جديد أضفته.
+
+### 9.3 الاختبارات
+`npm test` بيشغّل اختبارات المنطق الأمني (التحقق من `returnTo`، صلاحيات المسارات، توقيع Cloudinary، تعقيم ملفات Excel).
+
+---
+
+## 10. License notice
+
+All Rights Reserved. © 2026 Moaz (AlMo). لا يجوز نسخ هذا المشروع أو توزيعه أو تعديله أو استخدامه بدون إذن كتابي من صاحب الحقوق. التفاصيل في ملف `LICENSE`.

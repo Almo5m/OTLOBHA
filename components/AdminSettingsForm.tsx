@@ -131,7 +131,7 @@ export default function AdminSettingsForm() {
             {values.app_logo_url && (
               <img src={values.app_logo_url} alt="" className="h-16 w-16 rounded-xl border border-borderc object-cover" />
             )}
-            <ImageUploadField onUploaded={(url) => set("app_logo_url", url)} />
+            <ImageUploadField purpose="catalog" onUploaded={(url) => set("app_logo_url", url)} />
           </div>
           <div className="mt-3 flex flex-wrap gap-3">
             <button onClick={() => saveKeys(["app_logo_url"])} className="btn-secondary">حفظ الشعار</button>
@@ -154,7 +154,7 @@ export default function AdminSettingsForm() {
           {values.home_banner_image_url && (
             <img src={values.home_banner_image_url} alt="" className="mb-3 h-32 w-full rounded-lg object-cover" />
           )}
-          <ImageUploadField onUploaded={(url) => set("home_banner_image_url", url)} />
+          <ImageUploadField purpose="catalog" onUploaded={(url) => set("home_banner_image_url", url)} />
           <div className="mt-3 flex flex-wrap gap-3">
             <button onClick={() => saveKeys(["home_banner_image_url"])} className="btn-secondary">حفظ البانر</button>
             {values.home_banner_image_url && (

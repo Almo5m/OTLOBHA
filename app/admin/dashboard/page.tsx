@@ -8,7 +8,7 @@ import Link from "next/link";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDashboard() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("users").select("role,full_name").eq("id", user?.id).single();
   const isSuperAdmin = profile?.role === "super_admin";

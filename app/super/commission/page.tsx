@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import RecordCommissionPaymentForm from "@/components/RecordCommissionPaymentForm";
 
 export default async function CommissionPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: ledger } = await supabase
     .from("commission_ledger")
     .select("*, orders(order_number)")

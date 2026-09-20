@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import PolicyForm from "@/components/PolicyForm";
 
 export default async function PoliciesPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: policies } = await supabase.from("policies").select("*").order("published_at", { ascending: false });
 
   const hasTerms = (policies ?? []).some((p) => p.type === "terms");

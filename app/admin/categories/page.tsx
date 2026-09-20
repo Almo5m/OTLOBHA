@@ -10,7 +10,7 @@ import { Badge } from "@/components/Badge";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminCategoriesPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: categories } = await supabase.from("categories").select("*").order("sort_order");
   const { data: allSubcategories } = await supabase.from("product_subcategories").select("*").order("sort_order");
   const list = categories ?? [];

@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import { DebtStatusBadge } from "@/components/Badge";
 
 export default async function DebtsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: debts } = await supabase.from("debts").select("*").order("created_at", { ascending: false });
 
   const outstanding = (debts ?? []).filter((d) => d.status !== "settled");

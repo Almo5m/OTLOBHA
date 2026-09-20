@@ -8,7 +8,7 @@ import { OrderStatusBadge } from "@/components/Badge";
 // الصفحة دي بقت Super Admin بس (يتفحص كمان في middleware.ts) — بيانات مالية
 // وأداء حساسة مالهاش لازمة لـBusiness Admin
 export default async function AdminReportsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
 
   const [{ data: orders }, { data: topProducts }, { data: agentPerf }, { data: topCustomers }, { data: financial }] =
     await Promise.all([

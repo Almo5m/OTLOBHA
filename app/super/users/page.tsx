@@ -5,7 +5,7 @@ import Icon from "@/components/Icon";
 import { Badge } from "@/components/Badge";
 
 export default async function UsersManagementPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: users } = await supabase
     .from("users")
     .select("id,full_name,phone,role,status,created_at")

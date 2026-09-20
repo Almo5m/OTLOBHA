@@ -9,7 +9,7 @@ import IconBadge from "@/components/IconBadge";
 import Icon from "@/components/Icon";
 
 async function getProduct(slug: string) {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data } = await supabase
     .from("products")
     .select("id,name,image_url,description,last_known_price,status,category_id,sale_unit_id,categories(id,name),sale_units(name)")
@@ -18,8 +18,9 @@ async function getProduct(slug: string) {
   return data;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const product = await getProduct(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product) return { title: "منتج غير موجود" };
   return {
     title: product.name,
@@ -28,8 +29,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const product = await getProduct(params.slug);
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product || product.status !== "active") notFound();
 
   const category: any = product.categories;

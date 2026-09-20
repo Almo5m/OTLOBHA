@@ -13,7 +13,7 @@ const AVAILABILITY_LABELS: Record<string, { label: string; variant: "success" | 
 };
 
 export default async function AdminAgentsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: performance } = await supabase.rpc("get_agent_performance");
   const { data: agents } = await supabase
     .from("users").select("id,full_name,phone,agent_profiles(availability_status)")

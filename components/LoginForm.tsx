@@ -9,18 +9,13 @@ import PasswordInput from "@/components/PasswordInput";
 import ContactSupportLink from "@/components/ContactSupportLink";
 import Icon from "@/components/Icon";
 import { recordSession } from "@/lib/record-session";
-
-const ROLE_HOME: Record<string, string> = {
-  customer: "/home",
-  delivery_agent: "/agent/dashboard",
-  business_admin: "/admin/dashboard",
-  super_admin: "/admin/dashboard"
-};
+import { homeFor } from "@/lib/auth/roles";
+import { safeReturnPath } from "@/lib/auth/safe-return-path";
 
 export default function LoginForm() {
   const router = useRouter();
   const supabase = createClient();
-  const returnTo = useSearchParams().get("returnTo");
+  const returnTo = safeReturnPath(useSearchParams().get("returnTo"), "");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +39,7 @@ export default function LoginForm() {
     }
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) recordSession(user.id);
+    if (user) await recordSession();
 
     // لو العميل كان جاي من خطوة في الطلب (زي متابعة الدفع)، نرجّعه لنفس
     // المكان بدل ما نوديه للصفحة الرئيسية — تجربة متصلة وليست منقطعة
@@ -57,7 +52,7 @@ export default function LoginForm() {
     const { data: profile } = await supabase.from("users").select("role").eq("id", user?.id).single();
 
     router.refresh();
-    router.push(ROLE_HOME[profile?.role ?? "customer"]);
+    router.push(homeFor(profile?.role));
   }
 
   return (

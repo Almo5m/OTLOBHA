@@ -29,7 +29,7 @@ export default function CategoryForm() {
       <h2 className="font-medium">إضافة تصنيف جديد</h2>
       <input className="input" placeholder="اسم التصنيف" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
       <textarea className="input" placeholder="وصف اختياري" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-      <ImageUploadField onUploaded={(url) => setForm({ ...form, imageUrl: url })} />
+      <ImageUploadField purpose="catalog" onUploaded={(url) => setForm({ ...form, imageUrl: url })} />
       {error && <p className="text-sm text-error">{error}</p>}
       <button onClick={handleSubmit} disabled={loading} className="btn-primary">إضافة</button>
     </div>

@@ -5,7 +5,7 @@ import Icon from "@/components/Icon";
 import RevokeSessionButton from "@/components/RevokeSessionButton";
 
 export default async function SessionsPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: sessions } = await supabase
     .from("user_sessions")
     .select("*, users(full_name,role)")

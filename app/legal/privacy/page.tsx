@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PrivacyPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: policy } = await supabase
     .from("policies")
     .select("content, version, published_at")

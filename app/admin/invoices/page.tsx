@@ -7,7 +7,7 @@ import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllus
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminInvoicesPage() {
-  const supabase = createServerSupabase();
+  const supabase = await createServerSupabase();
   const { data: invoices } = await supabase
     .from("invoices")
     .select("*, orders(order_number)")
