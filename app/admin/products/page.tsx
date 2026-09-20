@@ -1,53 +1,31 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
-import ProductForm from "@/components/ProductForm";
-import ProductRowActions from "@/components/ProductRowActions";
-import ProductImageEditor from "@/components/ProductImageEditor";
-import Icon from "@/components/Icon";
-import { Badge } from "@/components/Badge";
+import ProductCatalog from "@/components/admin/ProductCatalog";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
+import { fetchAllProducts } from "@/lib/products/fetch-all";
 
 export default async function AdminProductsPage() {
   const supabase = await createServerSupabase();
-  const { data: products } = await supabase
-    .from("products").select("*, categories(name), sale_units(name)").order("created_at", { ascending: false });
-  const { data: categories } = await supabase.from("categories").select("id,name").eq("is_active", true);
-  const { data: units } = await supabase.from("sale_units").select("id,name");
-  const { data: subcategories } = await supabase.from("product_subcategories").select("id,name,category_id");
+
+  const [{ products, error }, { data: categories }, { data: units }, { data: subcategories }] = await Promise.all([
+    fetchAllProducts(supabase),
+    supabase.from("categories").select("id,name,is_active,sort_order").order("sort_order").order("name"),
+    supabase.from("sale_units").select("id,name").order("name"),
+    supabase.from("product_subcategories").select("id,name,category_id,sort_order")
+  ]);
 
   return (
     <>
       <AdminNav />
       <RealtimeRefresher tables={["products"]} channelName="admin-products-list" />
       <main className="mx-auto max-w-4xl px-4 py-6 lg:max-w-5xl">
-        <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="products" size={20} className="text-textSecondary" /> المنتجات
-        </h1>
-
-        <ProductForm categories={categories ?? []} units={units ?? []} subcategories={subcategories ?? []} />
-
-        <div className="mt-6 grid gap-2 lg:grid-cols-2">
-          {(products ?? []).map((p: any) => (
-            <div key={p.id} className="card flex items-center gap-3 text-sm animate-fadeIn">
-              <ProductImageEditor productId={p.id} imageUrl={p.image_url} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{p.name}</p>
-                <p className="numeric truncate text-textSecondary">{p.categories?.name} — {p.last_known_price} ج.م / {p.sale_units?.name}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <Badge variant={p.status === "active" ? "success" : "neutral"}>
-                  {p.status === "active" ? "نشط" : "موقوف"}
-                </Badge>
-                <ProductRowActions
-                  productId={p.id} status={p.status} price={p.last_known_price}
-                  categoryId={p.category_id} subcategoryId={p.subcategory_id}
-                  subcategories={subcategories ?? []}
-                />
-              </div>
-            </div>
-          ))}
-          {(products ?? []).length === 0 && <p className="text-sm text-textSecondary">لا توجد منتجات بعد.</p>}
-        </div>
+        {error && <p className="alert alert-error mb-4 text-sm">تعذّر تحميل كل المنتجات: {error}</p>}
+        <ProductCatalog
+          products={products}
+          categories={categories ?? []}
+          subcategories={subcategories ?? []}
+          units={units ?? []}
+        />
       </main>
     </>
   );
