@@ -69,7 +69,10 @@ export default function CheckoutPage() {
       manual_name: i.manualName,
       quantity: i.quantity,
       unit_id: i.unitId,
-      comment: i.comment
+      comment: i.comment,
+      category_id: i.manualCategoryId,
+      image_url: i.type === "manual" ? i.imageUrl : undefined,
+      target_price: i.type === "manual" ? i.targetPrice : undefined
     }));
 
     const { data, error: rpcError } = await supabase.rpc("create_order", {

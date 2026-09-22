@@ -6,6 +6,7 @@ import Icon from "./Icon";
 import Wordmark from "./Wordmark";
 import ThemeToggle from "./theme/ThemeToggle";
 import AnnouncementBar from "./AnnouncementBar";
+import { useCartStore } from "@/lib/cart-store";
 
 const links = [
   { href: "/home", label: "الرئيسية", icon: "market" as const },
@@ -16,6 +17,7 @@ const links = [
 
 export default function CustomerNav() {
   const pathname = usePathname();
+  const cartCount = useCartStore((s) => s.items.length);
 
   return (
     <>
@@ -36,12 +38,17 @@ export default function CustomerNav() {
                   <Link
                     key={l.href}
                     href={l.href}
-                    className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm transition-all duration-base ${
+                    className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm transition-all duration-base ${
                       active ? "bg-accent-soft text-accent-strong" : "text-textSecondary hover:bg-surfaceElevated"
                     }`}
                   >
                     <Icon name={l.icon} size={16} />
                     {l.label}
+                    {l.href === "/cart" && cartCount > 0 && (
+                      <span className="numeric absolute -top-1 -left-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
+                        {cartCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -60,9 +67,16 @@ export default function CustomerNav() {
               <Link
                 key={l.href}
                 href={l.href}
-                className="flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 transition-all duration-base"
+                className="relative flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 transition-all duration-base"
               >
-                <Icon name={l.icon} size={21} className={`transition-transform duration-base ${active ? "scale-110 text-accent" : "text-textSecondary"}`} />
+                <span className="relative">
+                  <Icon name={l.icon} size={21} className={`transition-transform duration-base ${active ? "scale-110 text-accent" : "text-textSecondary"}`} />
+                  {l.href === "/cart" && cartCount > 0 && (
+                    <span className="numeric absolute -top-1.5 -left-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </span>
                 <span className={`text-[11px] ${active ? "font-medium text-accent" : "text-textSecondary"}`}>{l.label}</span>
               </Link>
             );

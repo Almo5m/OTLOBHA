@@ -69,7 +69,7 @@ export default function ProductRow({ product, issues, unitName, isNew, isOpen, c
             <Badge variant={isActive ? "success" : "neutral"}>{isActive ? "نشط" : "موقوف"}</Badge>
           </button>
           <button onClick={onToggle} aria-expanded={isOpen} className="text-xs text-accent underline">
-            {isOpen ? "إغلاق" : "تعديل"}
+            تعديل
           </button>
         </div>
       </div>

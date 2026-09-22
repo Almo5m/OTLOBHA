@@ -14,15 +14,21 @@ type Props = {
   defaultCategoryId: string;
   categoryName: (id: string) => string;
   onAdded: () => void;
+  initial?: { name?: string; description?: string; categoryId?: string; imageUrl?: string };
+  onCreated?: (productId: string) => void;
 };
 
-export default function ProductForm({ categories, units, subcategories, existing, defaultCategoryId, categoryName, onAdded }: Props) {
+export default function ProductForm({
+  categories, units, subcategories, existing, defaultCategoryId, categoryName, onAdded, initial, onCreated
+}: Props) {
   const supabase = createClient();
   const router = useRouter();
   const [form, setForm] = useState({
-    name: "", description: "",
-    categoryId: categories.some((c) => c.id === defaultCategoryId) ? defaultCategoryId : categories[0]?.id ?? "",
-    unitId: units[0]?.id ?? "", subcategoryId: "", price: "", imageUrl: ""
+    name: initial?.name ?? "", description: initial?.description ?? "",
+    categoryId: initial?.categoryId && categories.some((c) => c.id === initial.categoryId)
+      ? initial.categoryId
+      : categories.some((c) => c.id === defaultCategoryId) ? defaultCategoryId : categories[0]?.id ?? "",
+    unitId: units[0]?.id ?? "", subcategoryId: "", price: "", imageUrl: initial?.imageUrl ?? ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,11 +48,11 @@ export default function ProductForm({ categories, units, subcategories, existing
     setAdded(null);
 
     const price = Number(form.price) || 0;
-    const { error: insertError } = await supabase.from("products").insert({
+    const { data: inserted, error: insertError } = await supabase.from("products").insert({
       name: form.name.trim(), description: form.description.trim() || null, category_id: form.categoryId,
       sale_unit_id: form.unitId, subcategory_id: form.subcategoryId || null,
       last_known_price: price, image_url: form.imageUrl || null
-    });
+    }).select("id").single();
     setLoading(false);
     if (insertError) { setError(insertError.message); return; }
 
@@ -55,6 +61,7 @@ export default function ProductForm({ categories, units, subcategories, existing
     setAdded(
       `تمت إضافة «${form.name.trim()}» — ${categoryName(form.categoryId)}${subcategory ? ` › ${subcategory}` : ""} — ${price} ج.م / ${unit}${form.imageUrl ? "" : " — بدون صورة"}`
     );
+    onCreated?.(inserted.id);
     setForm({ ...form, name: "", description: "", price: "", imageUrl: "", subcategoryId: "" });
     setUploadKey((key) => key + 1);
     onAdded();

@@ -64,7 +64,10 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
       <h2 className="font-medium">تسجيل الشراء</h2>
       {items.map((item) => (
         <div key={item.id} className="card">
-          <p className="mb-2 font-medium">{item.products?.name ?? item.manual_name} — {item.quantity} {item.sale_units?.name}</p>
+          <p className="mb-2 font-medium">
+            {item.products?.name ?? item.manual_name} —{" "}
+            {item.target_price ? `بميزانية تقريبية ${item.target_price} ج.م` : `${item.quantity} ${item.sale_units?.name}`}
+          </p>
           {item.customer_comment && <p className="mb-2 text-xs text-textSecondary">ملاحظة العميل: {item.customer_comment}</p>}
 
           {item.is_available !== null ? (
@@ -79,7 +82,7 @@ export default function ShoppingForm({ orderId, items }: { orderId: string; item
                 متوفر
               </label>
               {state[item.id].available && (
-                <input type="number" dir="ltr" placeholder="السعر الفعلي" className="input"
+                <input type="number" dir="ltr" placeholder={item.target_price ? "المبلغ اللي دفعته فعليًا" : "السعر الفعلي"} className="input"
                   value={state[item.id].price}
                   onChange={(e) => setState({ ...state, [item.id]: { ...state[item.id], price: e.target.value } })} />
               )}

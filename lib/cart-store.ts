@@ -9,10 +9,12 @@ export type CartItem = {
   productName?: string;
   imageUrl?: string | null;
   manualName?: string;
+  manualCategoryId?: string;   // تصنيف مقترح من العميل للمنتج غير الموجود
   displayedPrice?: number;     // للعرض فقط، غير نهائي (القسم 17)
-  quantity: number;
-  unitId: string;
-  unitName: string;
+  targetPrice?: number;        // بديل عن الكمية/الوحدة: "عايزه بـ150 جنيه" مثلًا
+  quantity?: number;
+  unitId?: string;
+  unitName?: string;
   comment?: string;
 };
 

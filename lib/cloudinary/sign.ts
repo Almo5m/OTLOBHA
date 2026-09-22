@@ -4,7 +4,8 @@ export const ALLOWED_IMAGE_FORMATS = "jpg,jpeg,png,webp";
 
 export const UPLOAD_PURPOSES = {
   catalog: { folder: "otlobha/catalog", roles: ["business_admin", "super_admin"] },
-  "payment-proof": { folder: "otlobha/payment-proofs", roles: ["customer"] }
+  "payment-proof": { folder: "otlobha/payment-proofs", roles: ["customer"] },
+  "product-request": { folder: "otlobha/product-requests", roles: ["customer"] }
 } as const;
 
 export type UploadPurpose = keyof typeof UPLOAD_PURPOSES;

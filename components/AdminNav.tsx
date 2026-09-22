@@ -26,6 +26,7 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     label: "المنتجات",
     items: [
       { href: "/admin/products", label: "المنتجات", icon: "products" },
+      { href: "/admin/product-requests", label: "طلبات منتجات جديدة", icon: "plus" },
       { href: "/admin/categories", label: "التصنيفات", icon: "market", superOnly: true }
     ]
   },

@@ -165,6 +165,63 @@ export default function AdminSettingsForm() {
           </div>
         </section>
 
+        {/* الرسمة التوضيحية جوه الهيرو */}
+        <section className="card">
+          <h2 className="mb-3 flex items-center gap-2 font-bold">
+            <Icon name="products" size={17} className="text-textSecondary" /> الرسمة التوضيحية (جوه الهيرو)
+          </h2>
+          <p className="mb-3 text-xs text-textSecondary">
+            الصورة دي بتظهر جنب عنوان الصفحة الرئيسية بدل رسمة الدراجة الافتراضية. الأفضل صورة مربعة.
+          </p>
+          {values.home_hero_image_url && (
+            <img src={values.home_hero_image_url} alt="" className="mb-3 h-32 w-32 rounded-2xl object-cover" />
+          )}
+          <ImageUploadField purpose="catalog" onUploaded={(url) => set("home_hero_image_url", url)} />
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button onClick={() => saveKeys(["home_hero_image_url"])} className="btn-secondary">حفظ الرسمة</button>
+            {values.home_hero_image_url && (
+              <button onClick={() => { set("home_hero_image_url", ""); saveKeys(["home_hero_image_url"]); }} className="text-sm text-error">
+                إزالة الصورة (رجوع للرسمة الافتراضية)
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* وضع الطلب الحر — لحد ما يتجمع كتالوج كافي */}
+        <section className="card">
+          <h2 className="mb-3 flex items-center gap-2 font-bold">
+            <Icon name="cart" size={17} className="text-textSecondary" /> عرض الأقسام للعميل
+          </h2>
+          <p className="mb-3 text-xs text-textSecondary">
+            لو أطفيت الخيار ده، الأقسام هتختفي من الصفحة الرئيسية والعميل هيكتب طلبه بنفسه بالكامل (اسم الصنف، الكمية أو الميزانية، وصورة لو حب) — من غير ما يتصفح كتالوج جاهز. البانر وباقي محتوى الصفحة الرئيسية بيفضلوا زي ما هم.
+          </p>
+          <select
+            className="input max-w-xs"
+            value={String(values.categories_visible ?? true)}
+            onChange={(e) => set("categories_visible", e.target.value === "true")}
+          >
+            <option value="true">مفعّل — العميل يتصفح الأقسام والمنتجات</option>
+            <option value="false">متوقف — العميل يكتب طلبه بنفسه</option>
+          </select>
+
+          {values.categories_visible === false && (
+            <div className="mt-4 border-t border-borderc pt-4">
+              <p className="label mb-2">صورة كارت "ابدأ طلبك" في الصفحة الرئيسية</p>
+              {values.free_order_card_image_url && (
+                <img src={values.free_order_card_image_url} alt="" className="mb-3 h-24 w-full rounded-lg object-cover" />
+              )}
+              <ImageUploadField purpose="catalog" onUploaded={(url) => set("free_order_card_image_url", url)} />
+              {values.free_order_card_image_url && (
+                <button onClick={() => { set("free_order_card_image_url", ""); saveKeys(["free_order_card_image_url"]); }} className="mt-2 text-xs text-error underline">
+                  إزالة الصورة
+                </button>
+              )}
+            </div>
+          )}
+
+          <button onClick={() => saveKeys(["categories_visible", "free_order_card_image_url"])} className="btn-secondary mt-4">حفظ</button>
+        </section>
+
         {/* شريط الإعلانات */}
         <section className="card">
           <h2 className="mb-3 flex items-center gap-2 font-bold">
