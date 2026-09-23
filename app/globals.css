@@ -23,10 +23,10 @@
   --color-ink-contrast: #FFFFFF;
 
   /* Accent: كهرماني/ذهبي دافئ — هوية اطلبها المميزة، يُستخدم باعتدال للروابط/التمييز */
-  --color-accent: #B9862C;
-  --color-accent-strong: #8F6A1F;
-  --color-accent-soft: #FBF1DC;
-  --color-accent-neon: #E3B84E;
+  --color-accent: #C62828;
+  --color-accent-strong: #8E1F1F;
+  --color-accent-soft: #FBE4E4;
+  --color-accent-neon: #FF5252;
 
   /* Brand (احتياطي لتوافق الكود القديم) — نفس الأسود المحايد الآن */
   --color-brand: #C62828;
@@ -72,10 +72,10 @@
   --color-ink: #F2F2F3;
   --color-ink-contrast: #131315;
 
-  --color-accent: #E3B84E;
-  --color-accent-strong: #C9982A;
-  --color-accent-soft: #3A2F14;
-  --color-accent-neon: #F0CC6E;
+  --color-accent: #E57373;
+  --color-accent-strong: #EF9A9A;
+  --color-accent-soft: #3A1414;
+  --color-accent-neon: #FF8A80;
 
   --color-brand: #E57373;
   --color-brand-dark: #EF9A9A;

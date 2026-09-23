@@ -40,6 +40,9 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — نطلب ونوصّل لحد باب البيت`,
     description: SITE_DESCRIPTION,
     images: ["/og-image.png"]
+  },
+  verification: {
+    google: "rz5pNaKLcGue7H5nqnFgN0AXCPKMKLcjwRay3X4sPCw"
   }
 };
 

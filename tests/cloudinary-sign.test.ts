@@ -38,12 +38,20 @@ test("upload params restrict formats and pin the folder per purpose", () => {
 test("only known purposes are accepted", () => {
   assert.equal(isUploadPurpose("catalog"), true);
   assert.equal(isUploadPurpose("payment-proof"), true);
+  assert.equal(isUploadPurpose("product-request"), true);
   for (const value of ["__proto__", "constructor", "toString", "", "CATALOG", null, undefined, 1, {}]) {
     assert.equal(isUploadPurpose(value), false, String(value));
   }
 });
 
-test("customers can only upload payment proofs, admins only catalog images", () => {
+test("customers can only upload payment proofs and product-request photos, admins only catalog images", () => {
   assert.deepEqual([...UPLOAD_PURPOSES["payment-proof"].roles], ["customer"]);
+  assert.deepEqual([...UPLOAD_PURPOSES["product-request"].roles], ["customer"]);
   assert.ok(UPLOAD_PURPOSES.catalog.roles.every((role) => role.includes("admin")));
+});
+
+test("product-request uploads get their own folder, same format restriction", () => {
+  const params = buildUploadParams("product-request", 1);
+  assert.equal(params.folder, "otlobha/product-requests");
+  assert.equal(params.allowed_formats, "jpg,jpeg,png,webp");
 });

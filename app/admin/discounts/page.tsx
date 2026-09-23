@@ -8,9 +8,9 @@ import RealtimeRefresher from "@/components/RealtimeRefresher";
 
 export default async function AdminDiscountsPage() {
   const supabase = await createServerSupabase();
-  const { data: discounts } = await supabase
+  const { data: discounts, error: discountsError } = await supabase
     .from("customer_discounts")
-    .select("*, users(full_name, phone)")
+    .select("*, users!customer_discounts_customer_id_fkey(full_name, phone)")
     .order("created_at", { ascending: false });
 
   return (
@@ -21,6 +21,8 @@ export default async function AdminDiscountsPage() {
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
           <Icon name="wallet" size={20} className="text-textSecondary" /> خصومات التوصيل
         </h1>
+
+        {discountsError && <p className="alert alert-error mb-4 text-sm">تعذّر تحميل الخصومات: {discountsError.message}</p>}
 
         <DiscountForm />
 

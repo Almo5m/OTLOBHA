@@ -29,9 +29,9 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   const { data: customer } = order
     ? await supabase.from("users").select("full_name,phone").eq("id", order.customer_id).single()
     : { data: null };
-  const { data: items } = await supabase
+  const { data: items, error: itemsError } = await supabase
     .from("order_items")
-    .select("*, products(name), sale_units(name)")
+    .select("*, products!order_items_product_id_fkey(name), sale_units(name)")
     .eq("order_id", id);
   const { data: invoice } = await supabase
     .from("invoices").select("*").eq("order_id", id)
@@ -63,6 +63,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
           <p>{order.delivery_address_snapshot?.full_address_text}</p>
         </div>
 
+        {itemsError && <p className="alert alert-error mb-4 text-sm">تعذّر تحميل أصناف الطلب: {itemsError.message}</p>}
         <div className="grid gap-4 lg:grid-cols-2">
           <OrderItemsList items={(items as any) ?? []} />
           {invoice && <InvoiceCard invoice={{ ...invoice, payment_method: order.payment_method }} orderNumber={order.order_number} />}

@@ -9,9 +9,9 @@ export default async function AgentOrderDetailPage({ params }: { params: Promise
   const supabase = await createServerSupabase();
 
   const { data: order } = await supabase.from("orders").select("*").eq("id", id).single();
-  const { data: items } = await supabase
+  const { data: items, error: itemsError } = await supabase
     .from("order_items")
-    .select("*, products(name), sale_units(name)")
+    .select("*, products!order_items_product_id_fkey(name), sale_units(name)")
     .eq("order_id", id);
   const { data: customer } = order
     ? await supabase.from("users").select("full_name,phone").eq("id", order.customer_id).single()
@@ -27,6 +27,7 @@ export default async function AgentOrderDetailPage({ params }: { params: Promise
           <Icon name={order.status === "shopping" ? "cart" : "delivery"} size={19} className="text-textSecondary" />
           طلب {order.order_number}
         </h1>
+        {itemsError && <p className="alert alert-error mb-4 text-sm">تعذّر تحميل أصناف الطلب: {itemsError.message}</p>}
         <p className="mb-4 text-sm text-textSecondary">
           {customer?.full_name} — <span className="numeric">{customer?.phone}</span>
         </p>
