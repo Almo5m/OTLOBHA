@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Wordmark from "@/components/Wordmark";
 import PasswordInput from "@/components/PasswordInput";
@@ -11,7 +11,6 @@ import { safeReturnPath } from "@/lib/auth/safe-return-path";
 const EGYPT_PHONE_REGEX = /^01[0125][0-9]{8}$/;
 
 export default function RegisterForm() {
-  const router = useRouter();
   const supabase = createClient();
   const returnTo = safeReturnPath(useSearchParams().get("returnTo"), "");
   const [form, setForm] = useState({ fullName: "", phone: "", address: "", password: "", confirmPassword: "" });
@@ -61,8 +60,9 @@ export default function RegisterForm() {
 
     await recordSession();
 
-    setLoading(false);
-    router.push(returnTo || "/home");
+    // window.location بدل router.push لنفس سبب صفحة تسجيل الدخول: تجنّب
+    // نسخة مؤقتة من الصفحة كانت اتحمّلت قبل إنشاء الحساب
+    window.location.href = returnTo || "/home";
   }
 
   return (

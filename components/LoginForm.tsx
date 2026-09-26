@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Wordmark from "@/components/Wordmark";
@@ -13,7 +13,6 @@ import { homeFor } from "@/lib/auth/roles";
 import { safeReturnPath } from "@/lib/auth/safe-return-path";
 
 export default function LoginForm() {
-  const router = useRouter();
   const supabase = createClient();
   const returnTo = safeReturnPath(useSearchParams().get("returnTo"), "");
   const [phone, setPhone] = useState("");
@@ -43,16 +42,18 @@ export default function LoginForm() {
 
     // لو العميل كان جاي من خطوة في الطلب (زي متابعة الدفع)، نرجّعه لنفس
     // المكان بدل ما نوديه للصفحة الرئيسية — تجربة متصلة وليست منقطعة
+    //
+    // بننقّل بـ window.location بدل router.push عمدًا: التنقل العادي بيقرأ
+    // أحيانًا نسخة من الصفحة كانت اتحمّلت قبل تسجيل الدخول (Router Cache)،
+    // فتحس إن الدخول "مايعملش" غير لو عملت Refresh يدوي. التنقل الكامل ده
+    // بيضمن إن الصفحة الجاية شايفة إن المستخدم بقى مسجّل من أول تحميلة.
     if (returnTo) {
-      router.refresh();
-      router.push(returnTo);
+      window.location.href = returnTo;
       return;
     }
 
     const { data: profile } = await supabase.from("users").select("role").eq("id", user?.id).single();
-
-    router.refresh();
-    router.push(homeFor(profile?.role));
+    window.location.href = homeFor(profile?.role);
   }
 
   return (
