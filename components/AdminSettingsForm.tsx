@@ -96,6 +96,25 @@ export default function AdminSettingsForm() {
           <h2 className="mb-3 flex items-center gap-2 font-bold">
             <Icon name="payment" size={17} className="text-textSecondary" /> بيانات الدفع الإلكتروني
           </h2>
+          <div className="mb-4 grid gap-3 border-b border-borderc pb-4 sm:grid-cols-2">
+            <div>
+              <label className="label">الدفع بالمحفظة الإلكترونية</label>
+              <select className="input" value={String(values.wallet_payment_enabled ?? true)}
+                onChange={(e) => set("wallet_payment_enabled", e.target.value === "true")}>
+                <option value="true">مفعّل — يظهر كخيار للعميل</option>
+                <option value="false">متوقف — مخفي عن العميل</option>
+              </select>
+            </div>
+            <div>
+              <label className="label">الدفع بـ InstaPay</label>
+              <select className="input" value={String(values.instapay_payment_enabled ?? true)}
+                onChange={(e) => set("instapay_payment_enabled", e.target.value === "true")}>
+                <option value="true">مفعّل — يظهر كخيار للعميل</option>
+                <option value="false">متوقف — مخفي عن العميل</option>
+              </select>
+            </div>
+          </div>
+          <p className="mb-3 text-xs text-textSecondary">الدفع كاش يفضل متاح دايمًا ومش قابل للإيقاف.</p>
           <div className="space-y-4">
             <div>
               <p className="label mb-2">المحفظة الإلكترونية</p>
@@ -116,7 +135,7 @@ export default function AdminSettingsForm() {
               </div>
             </div>
           </div>
-          <button onClick={() => saveKeys(["payment_wallet_details", "payment_instapay_details"])} className="btn-secondary mt-3">حفظ</button>
+          <button onClick={() => saveKeys(["payment_wallet_details", "payment_instapay_details", "wallet_payment_enabled", "instapay_payment_enabled"])} className="btn-secondary mt-3">حفظ</button>
         </section>
 
         {/* شعار التطبيق */}

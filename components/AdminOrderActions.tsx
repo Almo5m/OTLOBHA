@@ -48,10 +48,8 @@ export default function AdminOrderActions({
       )}
 
       {(status === "shopping" || status === "ready_for_delivery") && !assignedAgentId && (
-        <div className="alert alert-warning flex flex-wrap items-center gap-2">
-          <span>الطلب لسه مالوش مندوب متعيّن — على الأغلب مفيش مندوب متاح دلوقتي.</span>
-          <button disabled={loading} onClick={() => run(() => supabase.rpc("admin_retry_agent_assignment", { p_order_id: orderId }))}
-            className="btn-secondary text-xs">إعادة محاولة تعيين مندوب</button>
+        <div className="alert alert-info flex flex-wrap items-center gap-2">
+          <span>الطلب متاح لكل المندوبين — أول واحد يضغط "قبول الطلب" من عنده هيستلمه. لسه محدش استلمه.</span>
           <button disabled={loading} onClick={() => run(() => supabase.rpc("admin_claim_order", { p_order_id: orderId }))}
             className="btn-primary text-xs">أنا هوصّله بنفسي</button>
         </div>

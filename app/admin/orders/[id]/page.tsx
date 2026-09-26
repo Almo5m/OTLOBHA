@@ -9,6 +9,7 @@ import PaymentProofPanel from "@/components/PaymentProofPanel";
 import ShoppingForm from "@/components/ShoppingForm";
 import DeliveryActions from "@/components/DeliveryActions";
 import Icon from "@/components/Icon";
+import OrderRealtimeRefresher from "@/components/OrderRealtimeRefresher";
 
 const EVENT_BY_STATUS: Record<string, { key: string; label: string }> = {
   accepted: { key: "order_accepted", label: "إرسال رسالة: تم قبول الطلب" },
@@ -64,6 +65,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         </div>
 
         {itemsError && <p className="alert alert-error mb-4 text-sm">تعذّر تحميل أصناف الطلب: {itemsError.message}</p>}
+        <OrderRealtimeRefresher orderId={id} />
         <div className="grid gap-4 lg:grid-cols-2">
           <OrderItemsList items={(items as any) ?? []} />
           {invoice && <InvoiceCard invoice={{ ...invoice, payment_method: order.payment_method }} orderNumber={order.order_number} />}

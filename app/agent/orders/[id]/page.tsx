@@ -3,6 +3,7 @@ import AgentNav from "@/components/AgentNav";
 import ShoppingForm from "@/components/ShoppingForm";
 import DeliveryActions from "@/components/DeliveryActions";
 import Icon from "@/components/Icon";
+import OrderRealtimeRefresher from "@/components/OrderRealtimeRefresher";
 
 export default async function AgentOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,6 +23,7 @@ export default async function AgentOrderDetailPage({ params }: { params: Promise
   return (
     <>
       <AgentNav />
+      <OrderRealtimeRefresher orderId={id} />
       <main className="mx-auto max-w-2xl px-4 py-6">
         <h1 className="mb-1 flex items-center gap-2 text-xl font-bold">
           <Icon name={order.status === "shopping" ? "cart" : "delivery"} size={19} className="text-textSecondary" />

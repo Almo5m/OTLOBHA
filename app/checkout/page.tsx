@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [proof, setProof] = useState({ imageUrl: "", senderName: "", senderNumber: "" });
+  const [enabledMethods, setEnabledMethods] = useState({ wallet: true, instapay: true });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -44,9 +45,23 @@ export default function CheckoutPage() {
     });
     supabase.from("platform_settings").select("value").eq("key", "price_disclaimer_text").single()
       .then(({ data }) => setDisclaimer(data?.value ?? ""));
+    supabase.from("platform_settings").select("key,value").in("key", ["wallet_payment_enabled", "instapay_payment_enabled"])
+      .then(({ data }) => {
+        const byKey = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+        setEnabledMethods({
+          wallet: byKey.wallet_payment_enabled ?? true,
+          instapay: byKey.instapay_payment_enabled ?? true
+        });
+      });
     supabase.from("policies").select("id").eq("type", "terms").order("published_at", { ascending: false }).limit(1).single()
       .then(({ data }) => setPolicyId(data?.id ?? null));
   }, []);
+
+  useEffect(() => {
+    if ((paymentMethod === "wallet" && !enabledMethods.wallet) || (paymentMethod === "instapay" && !enabledMethods.instapay)) {
+      setPaymentMethod("cash");
+    }
+  }, [enabledMethods, paymentMethod]);
 
   // لو العميل موافق قبل كده على نفس نسخة السياسة، منطلبش موافقة تانية
   const alreadyAgreed = !!policyId && policyId === alreadyAgreedPolicyId;
@@ -135,7 +150,9 @@ export default function CheckoutPage() {
         <div className="card mb-4">
           <h2 className="mb-3 font-medium">طريقة الدفع</h2>
           <div className="flex gap-3 text-sm">
-            {[["cash", "كاش"], ["wallet", "محفظة إلكترونية"], ["instapay", "InstaPay"]].map(([val, label]) => (
+            {[["cash", "كاش"], ["wallet", "محفظة إلكترونية"], ["instapay", "InstaPay"]]
+              .filter(([val]) => val === "cash" || (val === "wallet" ? enabledMethods.wallet : val === "instapay" ? enabledMethods.instapay : true))
+              .map(([val, label]) => (
               <label key={val} className="flex items-center gap-1.5">
                 <input type="radio" name="payment" checked={paymentMethod === val}
                   onChange={() => setPaymentMethod(val as any)} />
