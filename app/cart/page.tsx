@@ -9,6 +9,8 @@ import EmptyState from "@/components/EmptyState";
 import IconBadge from "@/components/IconBadge";
 import ImageUploadField from "@/components/ImageUploadField";
 import { useCartStore } from "@/lib/cart-store";
+import QuantityInput from "@/components/QuantityInput";
+import { sanitizeNumericInput } from "@/lib/format/digits";
 import { createClient } from "@/lib/supabase/client";
 
 type PricingMode = "quantity" | "budget";
@@ -99,9 +101,8 @@ export default function CartPage() {
                 </div>
                 <div className="flex flex-col items-end gap-1.5">
                   {typeof item.quantity === "number" && (
-                    <input
-                      type="number" dir="ltr" min={0.5} step="0.5" value={item.quantity}
-                      onChange={(e) => updateQuantity(item.key, Number(e.target.value))}
+                    <QuantityInput
+                      value={item.quantity} onChange={(v) => updateQuantity(item.key, v)}
                       className="w-16 rounded-sm border border-line px-2 py-1.5 text-center text-sm"
                     />
                   )}
@@ -168,9 +169,8 @@ export default function CartPage() {
 
               {pricingMode === "quantity" ? (
                 <div className="flex gap-2">
-                  <input type="number" dir="ltr" min={0.5} step="0.5" className="input" placeholder="الكمية"
-                    value={manualForm.quantity}
-                    onChange={(e) => setManualForm({ ...manualForm, quantity: Number(e.target.value) })} />
+                  <QuantityInput value={manualForm.quantity} className="input"
+                    onChange={(v) => setManualForm({ ...manualForm, quantity: v })} />
                   <select className="input" value={manualForm.unitId}
                     onChange={(e) => setManualForm({ ...manualForm, unitId: e.target.value })}>
                     {units.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -178,9 +178,9 @@ export default function CartPage() {
                 </div>
               ) : (
                 <div>
-                  <input type="number" dir="ltr" min={1} step="1" className="input" placeholder="مثال: 150"
+                  <input type="text" inputMode="decimal" dir="ltr" className="input" placeholder="مثال: 150"
                     value={manualForm.targetPrice}
-                    onChange={(e) => setManualForm({ ...manualForm, targetPrice: e.target.value })} />
+                    onChange={(e) => setManualForm({ ...manualForm, targetPrice: sanitizeNumericInput(e.target.value) })} />
                   <p className="mt-1 text-xs text-textSecondary">هيشتريلك المندوب بالمبلغ ده تقريبًا حسب الكمية المتاحة</p>
                 </div>
               )}

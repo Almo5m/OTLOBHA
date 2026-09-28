@@ -8,12 +8,11 @@
 
 ### أ) Supabase
 1. أنشئ مشروع جديد على [supabase.com](https://supabase.com).
-2. من **SQL Editor**، شغّل كل ملفات `supabase/migrations/` **بترتيبها الرقمي** (0001 → 0046) — أو استخدم `supabase db push` عبر الـ CLI بعد `supabase link`.
-   > لو كنت طبّقت المشروع قبل كده لحد 0021: يكفي تشغّل ملف `0022_fix_agent_profiles_insert_policy.sql` بس (الجديد) فوق قاعدة البيانات الحالية.
-   > لو كنت طبّقت لحد 0022: شغّل كمان `0023_popular_products_for_customers.sql` (قسم "منتجات ناس كتير طلبتها" في الصفحة الرئيسية).
-   > لو كنت طبّقت لحد 0023: شغّل كمان `0024_decline_shopping_assignment.sql` و`0025_online_payment_proof.sql` (رفض المندوب بسبب + نظام الدفع الأونلاين).
-   > لو كنت طبّقت لحد 0025: شغّل كمان `0026_banner_and_announcement_settings.sql` (إعدادات البانر وشريط الإعلانات).
-   > لو كنت طبّقت لحد 0026: شغّل بالترتيب `0027` حتى `0030` (الخصومات، العروض، أكثر العملاء طلبًا، وربط إشعارات Push بكل الأحداث المهمة).
+2. من **SQL Editor**، شغّل الملفين ده بالترتيب على المشروع الفاضي:
+   1. `supabase/schema.sql` — كل الجداول والدوال والصلاحيات (ملف واحد مجمّع).
+   2. `supabase/seed.sql` — البيانات الافتراضية (تصنيفات، وحدات بيع، قوالب واتساب، إعدادات).
+   > الملفين آمنين للتشغيل أكتر من مرة: لو الجدول أو الدالة موجودة بيتخطاها أو بيحدّثها، ومبيمسحش أي بيانات، وسيد الإعدادات مبيكتبش فوق أي قيمة غيّرتها من لوحة التحكم.
+   > الملفين دول في `.gitignore` عمدًا (مش بيترفعوا على GitHub) — احتفظ بنسختك منهم.
 3. من **Authentication → Providers**، تأكد أن Email/Password مفعّل (نستخدمه بدلاً من Phone Auth لتفادي تكلفة SMS — راجع القسم 3 أدناه).
 4. انسخ `Project URL` و`anon key` و`service_role key` من **Settings → API**.
 
@@ -93,7 +92,7 @@ app/
 components/                     — كل المكوّنات المشتركة
 lib/                            — Supabase clients + cart store
 middleware.ts                  — حماية المسارات حسب الدور
-supabase/migrations/            — كل ملفات SQL (شغّلها بالترتيب)
+supabase/schema.sql, seed.sql    — قاعدة البيانات كاملة (محلية، في .gitignore)
 supabase/functions/send-push    — Edge Function لإرسال Push فعليًا (يحتاج ربط Webhook، راجع القسم 5)
 ```
 
@@ -212,7 +211,7 @@ supabase/functions/send-push    — Edge Function لإرسال Push فعليًا
 
 ## 9. الأمان
 
-### 9.1 ما يفعله ملف `0046_security_hardening.sql`
+### 9.1 الحماية المدمجة في `schema.sql`
 - سحب صلاحية تنفيذ كل دوال قاعدة البيانات من الجمهور (`public`/`anon`/`authenticated`) ثم منح صريح لكل دالة للأدوار المسموحة فقط. الدوال الداخلية (`fn_transition_order`, `fn_queue_push`, `fn_log_audit`, `fn_create_cancellation_debt`, `assign_next_agent`, `fn_pick_agent`) لا يستدعيها أي دور من الواجهة.
 - **أي دالة جديدة تُضاف لاحقًا لازم تاخد `grant execute` صريح**، وإلا الواجهة مش هتقدر تستدعيها (ده مقصود).
 - إغلاق الكتابة المباشرة على `orders` و`order_items` و`audit_log` و`password_reset_tokens` — كل الكتابة عبر دوال RPC.

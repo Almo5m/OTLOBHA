@@ -8,6 +8,7 @@ import PopularProductsSection from "@/components/PopularProductsSection";
 import Footer from "@/components/Footer";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
 import PerksAlert from "@/components/PerksAlert";
+import DiscountBanner from "@/components/DiscountBanner";
 import HeroIllustration from "@/components/illustrations/HeroIllustration";
 
 function iconForCategory(name: string): Parameters<typeof Icon>[0]["name"] {
@@ -75,6 +76,8 @@ export default async function HomePage() {
           <div className="alert alert-warning mb-6">{settings.maintenance_message}</div>
         )}
 
+        <DiscountBanner />
+
         {/* Hero: تعريف الخدمة — أول حاجة يشوفها أي زائر جديد. ارتفاع البانر
             بقى ثابت (مش تابع لمقاس الصورة المرفوعة) عشان يفضل موحّد ومتحكم
             فيه مهما كانت الصورة اللي هترفعها بعدين */}
@@ -130,7 +133,7 @@ export default async function HomePage() {
           ))}
         </section>
 
-        <PerksAlert />
+        <PerksAlert excludeKinds={["discount"]} />
 
         {categoriesVisible ? (
           <>

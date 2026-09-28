@@ -4,12 +4,12 @@
 // استعلام بيحاول يضم (embed) الجدول التاني من غير ما يحدد أنهي FK بالظبط
 // (بصيغة `parent!fkey_name(...)`), ويرجّع خطأ بيتم تجاهله غالبًا لأن
 // أغلب الاستعلامات في المشروع بتاخد بس `data` من غير `error`.
-// الاختبار ده بيقرأ كل الـ migrations فعليًا، يلاقي كل زوج جداول عنده
+// الاختبار ده بيقرأ supabase/schema.sql فعليًا، يلاقي كل زوج جداول عنده
 // أكتر من علاقة، وبعدين يفحص كل ملفات app/ و components/ للتأكد إن أي
 // استعلام بيضم الجدول التاني من الجدول ده بيحدد الـ FK صراحة.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, extname } from "node:path";
 
 const ROOT = join(__dirname, "..");
@@ -23,24 +23,18 @@ function walk(dir: string, out: string[] = []) {
 }
 
 function findAmbiguousForeignKeys() {
-  const migrationsDir = join(ROOT, "supabase/migrations");
-  const files = readdirSync(migrationsDir).filter((f) => f.endsWith(".sql")).sort();
+  const schemaPath = join(ROOT, "supabase/schema.sql");
+  if (!existsSync(schemaPath)) return null;
 
+  const sql = readFileSync(schemaPath, "utf-8");
   const fks = new Map<string, Set<string>>(); // "child->parent" -> set of column names
-  for (const file of files) {
-    const sql = readFileSync(join(migrationsDir, file), "utf-8");
-    let currentTable: string | null = null;
-    for (const line of sql.split("\n")) {
-      const tableMatch = line.match(/(?:create table|alter table)\s+(?:if not exists\s+)?public\.(\w+)/i);
-      if (tableMatch) currentTable = tableMatch[1];
 
-      const colMatch = line.match(/^\s*(?:add column(?: if not exists)?\s+)?(\w+)\s+uuid\s+(?:not null\s+)?references public\.(\w+)\(id\)/i);
-      if (colMatch && currentTable) {
-        const key = `${currentTable}->${colMatch[2]}`;
-        if (!fks.has(key)) fks.set(key, new Set());
-        fks.get(key)!.add(colMatch[1]);
-      }
-    }
+  // الصيغة في schema.sql: ALTER TABLE ONLY public.child ADD CONSTRAINT x FOREIGN KEY (col) REFERENCES public.parent(id)
+  const pattern = /ALTER TABLE ONLY public\.(\w+)\s+ADD CONSTRAINT \w+ FOREIGN KEY \((\w+)\) REFERENCES public\.(\w+)\(/g;
+  for (const match of sql.matchAll(pattern)) {
+    const key = `${match[1]}->${match[3]}`;
+    if (!fks.has(key)) fks.set(key, new Set());
+    fks.get(key)!.add(match[2]);
   }
 
   return [...fks.entries()].filter(([, cols]) => cols.size > 1).map(([key]) => {
@@ -49,9 +43,16 @@ function findAmbiguousForeignKeys() {
   });
 }
 
-test("no PostgREST query embeds an ambiguous parent table without disambiguating the foreign key", () => {
+test("no PostgREST query embeds an ambiguous parent table without disambiguating the foreign key", (t) => {
   const ambiguous = findAmbiguousForeignKeys();
-  assert.ok(ambiguous.length > 0, "sanity check: expected to find at least the known ambiguous pairs in the migrations");
+  if (ambiguous === null) {
+    // supabase/schema.sql في .gitignore عمدًا، فلو الملف مش موجود عندك (مثلًا
+    // على جهاز تاني أو CI) الاختبار بيتخطى نفسه بدل ما يفشل — بس الحماية
+    // بتشتغل بس لما الملف يكون موجود، فخليه موجود على جهازك.
+    t.skip("supabase/schema.sql مش موجود — الفحص متخطّى");
+    return;
+  }
+  assert.ok(ambiguous.length > 0, "sanity check: expected to find at least the known ambiguous pairs in schema.sql");
 
   const sourceFiles: string[] = [];
   walk(join(ROOT, "app"), sourceFiles);

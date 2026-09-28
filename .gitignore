@@ -5,3 +5,7 @@ out/
 .env.local
 *.log
 .DS_Store
+
+# ملفات قاعدة البيانات — محلية بس، مش بتترفع على GitHub
+supabase/*.sql
+supabase/migrations/

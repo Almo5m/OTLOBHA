@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "./Icon";
 
-export default function PerksAlert() {
+export default function PerksAlert({ excludeKinds = [] }: { excludeKinds?: string[] }) {
   const [perks, setPerks] = useState<{ kind: string; label: string }[]>([]);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.rpc("get_active_perks").then(({ data }) => setPerks(data ?? []));
+    supabase.rpc("get_active_perks").then(({ data }) =>
+      setPerks((data ?? []).filter((p: { kind: string }) => !excludeKinds.includes(p.kind)))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (perks.length === 0) return null;

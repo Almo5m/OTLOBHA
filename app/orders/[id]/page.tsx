@@ -50,6 +50,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <OrderTimeline status={order.status} />
         </div>
 
+        {order.applied_discount_id && order.delivery_fee_original > order.delivery_fee_applied && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg border-2 border-accent bg-accent-soft px-4 py-3 text-sm font-medium text-accent-strong">
+            <Icon name="wallet" size={17} className="shrink-0" />
+            <span>
+              اتطبّق خصمك الخاص على الطلب ده — وفّرت{" "}
+              <span className="numeric font-bold">{(order.delivery_fee_original - order.delivery_fee_applied).toFixed(2)}</span> ج.م من رسوم التوصيل
+            </span>
+          </div>
+        )}
+
         {paymentProof && (
           <div className="alert alert-info mb-4 flex flex-wrap items-center gap-2">
             <Icon name="wallet" size={16} className="shrink-0" />
