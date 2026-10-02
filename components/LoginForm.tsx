@@ -105,19 +105,11 @@ export default function LoginForm() {
         <p className="mt-5 text-center text-sm text-textSecondary">
           نسيت كلمة المرور؟{" "}
           <ContactSupportLink
-            label="تواصل معانا لإعادة تعيينها"
+            label="كلّم السوبر أدمن لإعادة تعيينها"
             message="مرحبًا، نسيت كلمة مرور حسابي في المنيب جو وعايز أعيد تعيينها."
           />
         </p>
 
-        <div className="my-5 h-px bg-borderc" />
-
-        <p className="text-center text-sm">
-          ليس لديك حساب؟{" "}
-          <Link href={returnTo ? `/register?returnTo=${encodeURIComponent(returnTo)}` : "/register"} className="font-medium text-accent underline underline-offset-2">
-            إنشاء حساب جديد
-          </Link>
-        </p>
       </div>
     </main>
   );

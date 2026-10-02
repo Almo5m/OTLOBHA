@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildUploadParams, isUploadPurpose, signUploadParams, UPLOAD_PURPOSES } from "@/lib/cloudinary/sign";
+import { buildUploadParams, isUploadPurpose, roleCanUpload, signUploadParams } from "@/lib/cloudinary/sign";
 
 test("matches the signature example from the Cloudinary documentation", () => {
   const signature = signUploadParams(
@@ -39,19 +39,24 @@ test("only known purposes are accepted", () => {
   assert.equal(isUploadPurpose("catalog"), true);
   assert.equal(isUploadPurpose("payment-proof"), true);
   assert.equal(isUploadPurpose("product-request"), true);
+  assert.equal(isUploadPurpose("invoice"), true);
   for (const value of ["__proto__", "constructor", "toString", "", "CATALOG", null, undefined, 1, {}]) {
     assert.equal(isUploadPurpose(value), false, String(value));
   }
 });
 
-test("customers can only upload payment proofs and product-request photos, admins only catalog images", () => {
-  assert.deepEqual([...UPLOAD_PURPOSES["payment-proof"].roles], ["customer"]);
-  assert.deepEqual([...UPLOAD_PURPOSES["product-request"].roles], ["customer"]);
-  assert.ok(UPLOAD_PURPOSES.catalog.roles.every((role) => role.includes("admin")));
+test("guests can only upload payment proofs and product-request photos", () => {
+  assert.equal(roleCanUpload("payment-proof", "guest"), true);
+  assert.equal(roleCanUpload("product-request", "guest"), true);
+  assert.equal(roleCanUpload("catalog", "guest"), false);
+  assert.equal(roleCanUpload("invoice", "guest"), false);
 });
 
-test("product-request uploads get their own folder, same format restriction", () => {
-  const params = buildUploadParams("product-request", 1);
-  assert.equal(params.folder, "otlobha/product-requests");
-  assert.equal(params.allowed_formats, "jpg,jpeg,png,webp");
+test("catalog images are admin-only; invoice images are staff-only", () => {
+  assert.equal(roleCanUpload("catalog", "business_admin"), true);
+  assert.equal(roleCanUpload("catalog", "super_admin"), true);
+  assert.equal(roleCanUpload("catalog", "delivery_agent"), false);
+  for (const role of ["delivery_agent", "business_admin", "super_admin"] as const) {
+    assert.equal(roleCanUpload("invoice", role), true, role);
+  }
 });

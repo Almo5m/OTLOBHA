@@ -10,7 +10,7 @@ export default async function AdminComplaintsPage() {
   const supabase = await createServerSupabase();
   const { data: complaints } = await supabase
     .from("complaints")
-    .select("*, users!complaints_customer_id_fkey(full_name,phone)")
+    .select("*, orders(order_number)")
     .order("created_at", { ascending: false });
 
   return (
@@ -27,12 +27,16 @@ export default async function AdminComplaintsPage() {
             <div key={c.id} className="card animate-fadeIn">
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <p className="font-medium">{c.type} — {c.users?.full_name}</p>
+                  <p className="font-medium">{c.type} — {c.customer_name}</p>
                   <ComplaintStatusBadge status={c.status} />
                 </div>
                 <ComplaintStatusSelect complaintId={c.id} status={c.status} />
               </div>
               <p className="text-sm text-textSecondary">{c.details}</p>
+              <p className="numeric mt-1 text-xs text-textSecondary" dir="ltr">
+                <a href={`https://wa.me/2${c.customer_phone}`} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">{c.customer_phone}</a>
+                {c.orders?.order_number ? ` · ${c.orders.order_number}` : ""}
+              </p>
               <p className="numeric mt-1 text-xs text-textSecondary/70">{new Date(c.created_at).toLocaleString("ar-EG")}</p>
             </div>
           ))}

@@ -12,8 +12,8 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/admin", "/agent", "/super", "/api",
-        "/login", "/register", "/reset-password", "/blocked",
-        "/checkout", "/cart", "/orders", "/profile", "/debts", "/complaints", "/search"
+        "/login", "/blocked", "/order/",
+        "/checkout", "/cart", "/orders", "/complaints", "/search"
       ]
     },
     sitemap: `${SITE_URL}/sitemap.xml`

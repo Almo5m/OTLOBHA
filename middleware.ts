@@ -1,23 +1,24 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { homeFor, pathBelongsToRole } from "@/lib/auth/roles";
+import { homeFor, isStaffPath, pathBelongsToRole } from "@/lib/auth/roles";
 
-// المسارات دي مفتوحة تمامًا للزائر بدون تسجيل دخول — تصفّح حر للموقع
-const PUBLIC_PREFIXES = ["/", "/home", "/categories", "/products", "/cart", "/legal"];
-
-function isPublicRoute(pathname: string) {
-  return PUBLIC_PREFIXES.some((p) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/")));
-}
-
+// الموقع كله مفتوح للزوار (العميل بيطلب من غير حساب). الحماية بس على مسارات
+// الإداريين (/admin و/agent و/super)، وصفحة الدخول بتحوّل الإداري لمكانه.
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request: { headers: request.headers } });
+  const { pathname } = request.nextUrl;
+  const response = NextResponse.next({ request: { headers: request.headers } });
+
+  const isLogin = pathname === "/login" || pathname.startsWith("/login/");
+  const staffArea = isStaffPath(pathname);
+
+  // الزائر العادي مش محتاج نكلم Supabase خالص
+  if (!staffArea && !isLogin && pathname !== "/blocked") return response;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      // نفس السبب المذكور في lib/supabase/server.ts — الدور والصلاحيات
-      // لازم يتقروا طازة من الداتابيز في كل طلب بدون أي كاش من Next.js.
+      // الدور والصلاحيات لازم يتقروا طازة من الداتابيز في كل طلب بدون كاش
       global: {
         fetch: (url: RequestInfo | URL, options?: RequestInit) => fetch(url, { ...options, cache: "no-store" })
       },
@@ -36,29 +37,26 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  const { pathname } = request.nextUrl;
-
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/reset-password");
-  const publicRoute = isPublicRoute(pathname);
 
   if (!user) {
-    if (isAuthRoute || publicRoute) return response;
-    // مسار محمي (مثل /checkout أو /orders) وزائر مش مسجّل دخول:
-    // نوجّهه لتسجيل الدخول مع الاحتفاظ بمكانه عشان يرجعله بعد الدخول مباشرة
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("returnTo", pathname);
-    return NextResponse.redirect(loginUrl);
+    if (staffArea) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("returnTo", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return response;
   }
 
   const { data: profile } = await supabase
     .from("users")
     .select("role,status")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
+  // حساب في Auth من غير صف في users = مش إداري
   if (!profile) {
-    if (isAuthRoute || publicRoute) return response;
-    return NextResponse.redirect(new URL("/login", request.url));
+    if (staffArea) return NextResponse.redirect(new URL("/login", request.url));
+    return response;
   }
 
   if (profile.status !== "active") {
@@ -66,11 +64,11 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  if (isAuthRoute) {
+  if (isLogin) {
     return NextResponse.redirect(new URL(homeFor(profile.role), request.url));
   }
 
-  if (!pathBelongsToRole(pathname, profile.role) && !publicRoute) {
+  if (staffArea && !pathBelongsToRole(pathname, profile.role)) {
     return NextResponse.redirect(new URL(homeFor(profile.role), request.url));
   }
 

@@ -1,21 +1,34 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { homeFor, pathBelongsToRole } from "@/lib/auth/roles";
+import { homeFor, isStaffPath, isStaffRole, pathBelongsToRole } from "@/lib/auth/roles";
 
-test("homeFor maps every role and defaults to the customer home", () => {
-  assert.equal(homeFor("customer"), "/home");
+test("homeFor maps every staff role and defaults to the public home", () => {
   assert.equal(homeFor("delivery_agent"), "/agent/dashboard");
   assert.equal(homeFor("business_admin"), "/admin/dashboard");
   assert.equal(homeFor("super_admin"), "/admin/dashboard");
+  assert.equal(homeFor("customer"), "/home");
   assert.equal(homeFor("unknown"), "/home");
   assert.equal(homeFor(null), "/home");
 });
 
-test("customers cannot reach staff areas", () => {
+test("only the three staff roles are staff", () => {
+  assert.equal(isStaffRole("delivery_agent"), true);
+  assert.equal(isStaffRole("business_admin"), true);
+  assert.equal(isStaffRole("super_admin"), true);
+  assert.equal(isStaffRole("customer"), false);
+  assert.equal(isStaffRole(undefined), false);
+});
+
+test("staff paths are detected without false positives", () => {
+  for (const path of ["/admin", "/admin/orders", "/agent/dashboard", "/super/users"]) assert.equal(isStaffPath(path), true, path);
+  for (const path of ["/", "/home", "/order/abc", "/administrator", "/agents-info"]) assert.equal(isStaffPath(path), false, path);
+});
+
+test("non-staff roles cannot reach staff areas but can reach public pages", () => {
   for (const path of ["/admin/dashboard", "/admin/orders/1", "/super/users", "/agent/dashboard", "/admin/settings"]) {
     assert.equal(pathBelongsToRole(path, "customer"), false, path);
   }
-  assert.equal(pathBelongsToRole("/orders", "customer"), true);
+  assert.equal(pathBelongsToRole("/home", "customer"), true);
 });
 
 test("agents only reach agent pages", () => {

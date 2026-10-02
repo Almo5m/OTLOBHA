@@ -32,12 +32,10 @@ export default function PaymentProofUpload({
   method, onChange
 }: {
   method: "wallet" | "instapay";
-  onChange: (proof: { imageUrl: string; senderName: string; senderNumber: string }) => void;
+  onChange: (imageUrl: string) => void;
 }) {
   const [details, setDetails] = useState<any>(null);
   const [imageUrl, setImageUrl] = useState("");
-  const [senderName, setSenderName] = useState("");
-  const [senderNumber, setSenderNumber] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
@@ -47,9 +45,9 @@ export default function PaymentProofUpload({
   }, [method]);
 
   useEffect(() => {
-    onChange({ imageUrl, senderName, senderNumber });
+    onChange(imageUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUrl, senderName, senderNumber]);
+  }, [imageUrl]);
 
   return (
     <div className="card mb-4 space-y-3">
@@ -76,17 +74,10 @@ export default function PaymentProofUpload({
       )}
 
       <div className="alert alert-warning">
-        حوّل المبلغ التقريبي الظاهر الآن. المبلغ ده مش نهائي — السعر الفعلي هيتحدد لما المندوب يشتري المنتجات وتُعتمد الفاتورة، وأي فرق هيتسوّى وقت التسليم.
+        التحويل اختياري دلوقتي: تقدر تدفع كاش عند الاستلام. لو هتحوّل، المبلغ النهائي هو السعر الفعلي وقت الشراء (هتلاقيه في فاتورتك)، وأي فرق بيتسوّى وقت التسليم.
       </div>
 
-      <div>
-        <label className="label">اسم المُحوِّل</label>
-        <input className="input" value={senderName} onChange={(e) => setSenderName(e.target.value)} />
-      </div>
-      <div>
-        <label className="label">رقم المُحوِّل (المحفظة/الحساب اللي حوّلت منه)</label>
-        <input className="input" value={senderNumber} onChange={(e) => setSenderNumber(e.target.value)} />
-      </div>
+      <div className="text-xs text-textSecondary">لو حوّلت، ارفع صورة التحويل (اختياري) عشان نتأكد منه بسرعة:</div>
       <ImageUploadField purpose="payment-proof" onUploaded={setImageUrl} />
     </div>
   );

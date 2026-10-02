@@ -19,7 +19,7 @@ type Request = {
   manual_category_id: string | null;
   categories: { name: string } | null;
   sale_units: { name: string } | null;
-  orders: { order_number: string; users: { full_name: string; phone: string } | null } | null;
+  orders: { order_number: string; customer_name: string; customer_phone: string } | null;
 };
 
 export default function ProductRequestsList({
@@ -78,7 +78,7 @@ export default function ProductRequestsList({
                   {r.customer_comment ? ` — «${r.customer_comment}»` : ""}
                 </p>
                 <p className="text-xs text-textSecondary">
-                  طلب {r.orders?.order_number} — {r.orders?.users?.full_name} ({r.orders?.users?.phone})
+                  طلب {r.orders?.order_number} — {r.orders?.customer_name} ({r.orders?.customer_phone})
                 </p>
               </div>
               <div className="flex shrink-0 gap-2">

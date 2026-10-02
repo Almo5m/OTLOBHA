@@ -2,20 +2,20 @@ import Icon from "./Icon";
 import { Badge } from "./Badge";
 
 const STAGES = [
-  { key: "received", label: "تم الاستلام", icon: "orders" as const, statuses: ["review", "accepted"] },
-  { key: "preparing", label: "جارٍ التجهيز", icon: "cart" as const, statuses: ["shopping", "invoice_preparation", "invoice_approved", "ready_for_delivery"] },
-  { key: "on_the_way", label: "في الطريق", icon: "delivery" as const, statuses: ["assigned", "on_the_way"] },
+  { key: "received", label: "تم الاستلام", icon: "orders" as const, statuses: ["new_order"] },
+  { key: "preparing", label: "جارٍ الشراء", icon: "cart" as const, statuses: ["shopping"] },
+  { key: "on_the_way", label: "في الطريق", icon: "delivery" as const, statuses: ["on_the_way"] },
   { key: "delivered", label: "تم التسليم", icon: "check" as const, statuses: ["delivered"] }
 ];
 
 export default function OrderTimeline({ status }: { status: string }) {
-  if (status === "rejected" || status.startsWith("canceled")) {
+  if (status.startsWith("canceled")) {
     return (
       <div className="card flex items-center gap-3" style={{ borderColor: "var(--color-error)" }}>
         <Icon name="close" size={20} className="text-error shrink-0" />
         <div>
           <p className="font-medium text-error">
-            {status === "rejected" ? "تم رفض الطلب" : "تم إلغاء الطلب"}
+            {status === "canceled_by_customer" ? "تم إلغاء الطلب (من العميل)" : "تم إلغاء الطلب"}
           </p>
         </div>
       </div>

@@ -10,9 +10,8 @@ import { useCartStore } from "@/lib/cart-store";
 
 const links = [
   { href: "/home", label: "الرئيسية", icon: "market" as const },
-  { href: "/orders", label: "طلباتي", icon: "orders" as const },
-  { href: "/cart", label: "السلة", icon: "cart" as const },
-  { href: "/profile", label: "حسابي", icon: "account" as const }
+  { href: "/cart", label: "اطلب", icon: "cart" as const },
+  { href: "/orders", label: "طلباتي", icon: "orders" as const }
 ];
 
 export default function CustomerNav() {

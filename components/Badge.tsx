@@ -5,33 +5,16 @@ export function Badge({ children, variant = "neutral" }: { children: React.React
 }
 
 const ORDER_STATUS: Record<string, { label: string; variant: Variant }> = {
-  review: { label: "قيد المراجعة", variant: "neutral" },
-  accepted: { label: "تم القبول", variant: "info" },
-  rejected: { label: "مرفوض", variant: "error" },
+  new_order: { label: "طلب جديد", variant: "warning" },
   shopping: { label: "جارٍ الشراء", variant: "accent" },
-  invoice_preparation: { label: "تجهيز الفاتورة", variant: "accent" },
-  invoice_approved: { label: "فاتورة معتمدة", variant: "info" },
-  ready_for_delivery: { label: "جاهز للتوصيل", variant: "info" },
-  assigned: { label: "تم تعيين مندوب", variant: "accent" },
-  on_the_way: { label: "في الطريق إليك", variant: "warning" },
+  on_the_way: { label: "في الطريق", variant: "info" },
   delivered: { label: "تم التسليم", variant: "success" },
-  canceled_by_customer: { label: "ملغي منك", variant: "error" },
+  canceled_by_customer: { label: "ملغي من العميل", variant: "error" },
   canceled_by_business: { label: "ملغي من الإدارة", variant: "error" }
 };
 
 export function OrderStatusBadge({ status }: { status: string }) {
   const s = ORDER_STATUS[status] ?? { label: status, variant: "neutral" as Variant };
-  return <Badge variant={s.variant}>{s.label}</Badge>;
-}
-
-const DEBT_STATUS: Record<string, { label: string; variant: Variant }> = {
-  outstanding: { label: "مستحق", variant: "warning" },
-  partially_settled: { label: "مسدد جزئيًا", variant: "info" },
-  settled: { label: "تم السداد", variant: "success" }
-};
-
-export function DebtStatusBadge({ status }: { status: string }) {
-  const s = DEBT_STATUS[status] ?? { label: status, variant: "neutral" as Variant };
   return <Badge variant={s.variant}>{s.label}</Badge>;
 }
 

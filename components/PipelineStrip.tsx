@@ -1,15 +1,14 @@
 const STAGES = [
-  { key: "new", label: "قيد المراجعة" },
-  { key: "in_progress", label: "قيد التنفيذ" },
-  { key: "ready", label: "جاهزة للتوصيل" },
+  { key: "new", label: "جديدة" },
+  { key: "in_progress", label: "جارٍ الشراء" },
   { key: "on_the_way", label: "في الطريق" },
-  { key: "completed", label: "مكتملة" }
+  { key: "completed", label: "تم التسليم" }
 ];
 
 export default function PipelineStrip({
   values
 }: {
-  values: { new: number; in_progress: number; ready: number; on_the_way: number; completed: number };
+  values: { new: number; in_progress: number; on_the_way: number; completed: number };
 }) {
   return (
     <div className="card overflow-hidden p-0">

@@ -29,12 +29,23 @@ function findAmbiguousForeignKeys() {
   const sql = readFileSync(schemaPath, "utf-8");
   const fks = new Map<string, Set<string>>(); // "child->parent" -> set of column names
 
-  // الصيغة في schema.sql: ALTER TABLE ONLY public.child ADD CONSTRAINT x FOREIGN KEY (col) REFERENCES public.parent(id)
-  const pattern = /ALTER TABLE ONLY public\.(\w+)\s+ADD CONSTRAINT \w+ FOREIGN KEY \((\w+)\) REFERENCES public\.(\w+)\(/g;
-  for (const match of sql.matchAll(pattern)) {
-    const key = `${match[1]}->${match[3]}`;
+  const add = (child: string, col: string, parent: string) => {
+    const key = `${child}->${parent}`;
     if (!fks.has(key)) fks.set(key, new Set());
-    fks.get(key)!.add(match[2]);
+    fks.get(key)!.add(col);
+  };
+
+  // الصيغة 1 (pg_dump): ALTER TABLE ONLY public.child ADD CONSTRAINT x FOREIGN KEY (col) REFERENCES public.parent(id)
+  const alterPattern = /ALTER TABLE ONLY public\.(\w+)\s+ADD CONSTRAINT \w+ FOREIGN KEY \((\w+)\) REFERENCES public\.(\w+)\(/g;
+  for (const match of sql.matchAll(alterPattern)) add(match[1], match[2], match[3]);
+
+  // الصيغة 2 (schema.sql الحالي): مراجع inline جوه create table — "col uuid ... references public.parent(id)"
+  const tablePattern = /create table if not exists public\.(\w+)\s*\(([\s\S]*?)\n\);/gi;
+  for (const table of sql.matchAll(tablePattern)) {
+    for (const line of table[2].split("\n")) {
+      const ref = line.match(/^\s*(\w+)\s+[\w(),]+.*?references public\.(\w+)\(/i);
+      if (ref) add(table[1], ref[1], ref[2]);
+    }
   }
 
   return [...fks.entries()].filter(([, cols]) => cols.size > 1).map(([key]) => {

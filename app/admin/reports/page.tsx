@@ -14,7 +14,7 @@ export default async function AdminReportsPage() {
     await Promise.all([
       supabase
         .from("orders")
-        .select("order_number,status,payment_method,delivery_fee_applied,created_at,delivered_at,users!orders_customer_id_fkey(full_name,phone)")
+        .select("order_number,status,payment_method,delivery_fee_applied,created_at,delivered_at,customer_name,customer_phone")
         .order("created_at", { ascending: false })
         .limit(1000),
       supabase.rpc("get_top_products"),
@@ -36,7 +36,7 @@ export default async function AdminReportsPage() {
   const topCustomersSorted = (topCustomers ?? []);
 
   const ordersReport = (orders ?? []).map((o: any) => ({
-    "رقم الطلب": o.order_number, "العميل": o.users?.full_name, "الهاتف": o.users?.phone,
+    "رقم الطلب": o.order_number, "العميل": o.customer_name, "الهاتف": o.customer_phone,
     "الحالة": o.status, "طريقة الدفع": o.payment_method, "رسوم التوصيل": o.delivery_fee_applied,
     "تاريخ الإنشاء": o.created_at, "تاريخ التسليم": o.delivered_at
   }));
@@ -66,9 +66,9 @@ export default async function AdminReportsPage() {
             <p className="text-xs text-textSecondary">إجمالي المبيعات (ج.م)</p>
           </div>
           <div className="card">
-            <IconBadge name="debt" tone="warning" size="sm" />
-            <p className="numeric mt-2 text-lg font-bold">{(f.outstanding_debts ?? 0).toLocaleString("ar-EG")}</p>
-            <p className="text-xs text-textSecondary">ديون مستحقة (ج.م)</p>
+            <IconBadge name="orders" tone="warning" size="sm" />
+            <p className="numeric mt-2 text-lg font-bold">{(f.delivered_orders ?? 0).toLocaleString("ar-EG")}</p>
+            <p className="text-xs text-textSecondary">طلبات مُسلّمة</p>
           </div>
           <div className="card">
             <IconBadge name="payment" tone="info" size="sm" />
@@ -190,7 +190,7 @@ export default async function AdminReportsPage() {
               </thead>
               <tbody>
                 {topCustomersSorted.slice(0, 10).map((c: any) => (
-                  <tr key={c.customer_id} className="border-t border-borderc">
+                  <tr key={c.phone} className="border-t border-borderc">
                     <td className="px-3 py-2">{c.full_name} — <span className="numeric text-textSecondary">{c.phone}</span></td>
                     <td className="numeric px-3 py-2">{c.order_count}</td>
                     <td className="numeric px-3 py-2">{c.total_spent} ج.م</td>

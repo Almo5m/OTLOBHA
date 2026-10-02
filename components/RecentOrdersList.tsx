@@ -6,7 +6,7 @@ type RecentOrder = {
   order_number: string;
   status: string;
   created_at: string;
-  users?: { full_name: string } | null;
+  customer_name: string;
 };
 
 export default function RecentOrdersList({ orders }: { orders: RecentOrder[] }) {
@@ -24,7 +24,7 @@ export default function RecentOrdersList({ orders }: { orders: RecentOrder[] }) 
         >
           <div className="min-w-0">
             <p className="numeric font-medium">{o.order_number}</p>
-            <p className="truncate text-xs text-textSecondary">{o.users?.full_name ?? "—"}</p>
+            <p className="truncate text-xs text-textSecondary">{o.customer_name}</p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <OrderStatusBadge status={o.status} />

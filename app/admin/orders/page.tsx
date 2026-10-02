@@ -11,7 +11,7 @@ export default async function AdminOrdersPage() {
   const supabase = await createServerSupabase();
   const { data: orders } = await supabase
     .from("orders")
-    .select("id,order_number,status,created_at,payment_method,users!orders_customer_id_fkey(full_name,phone)")
+    .select("id,order_number,status,created_at,payment_method,customer_name,customer_phone")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -36,7 +36,7 @@ export default async function AdminOrdersPage() {
                     <span className="numeric font-medium">{o.order_number}</span>
                     <OrderStatusBadge status={o.status} />
                   </div>
-                  <p className="text-sm text-textSecondary">{o.users?.full_name} — <span className="numeric">{o.users?.phone}</span></p>
+                  <p className="text-sm text-textSecondary">{o.customer_name} — <span className="numeric">{o.customer_phone}</span></p>
                   <p className="numeric mt-1 text-xs text-textSecondary">{new Date(o.created_at).toLocaleString("ar-EG")}</p>
                 </Link>
               ))}
@@ -58,7 +58,7 @@ export default async function AdminOrdersPage() {
                   {(orders ?? []).map((o: any) => (
                     <tr key={o.id} className="border-t border-borderc transition-colors duration-fast hover:bg-surfaceElevated">
                       <td className="numeric px-3 py-2">{o.order_number}</td>
-                      <td className="px-3 py-2">{o.users?.full_name} — <span className="numeric">{o.users?.phone}</span></td>
+                      <td className="px-3 py-2">{o.customer_name} — <span className="numeric">{o.customer_phone}</span></td>
                       <td className="px-3 py-2"><OrderStatusBadge status={o.status} /></td>
                       <td className="numeric px-3 py-2 text-textSecondary">{new Date(o.created_at).toLocaleString("ar-EG")}</td>
                       <td className="px-3 py-2">

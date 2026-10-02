@@ -23,7 +23,7 @@ export default function AdminSettingsForm() {
   // حفظ مجموعة مفاتيح مع بعض دفعة واحدة — بدل ما كل حقل ليه زرار حفظ منفصل،
   // كل كارت (مجموعة مرتبطة منطقيًا) ليها زرار واحد بس
   async function saveKeys(keys: string[]) {
-    const results = await Promise.all(keys.map((k) => supabase.from("platform_settings").update({ value: values[k] }).eq("key", k)));
+    const results = await Promise.all(keys.map((k) => supabase.from("platform_settings").upsert({ key: k, value: values[k] ?? null }, { onConflict: "key" })));
     const failed = results.find((r) => r.error);
     setSaved(failed ? `فشل: ${failed.error!.message} (ده إعداد لصلاحية Super Admin فقط)` : "تم الحفظ ✓");
     setTimeout(() => setSaved(null), 2500);
@@ -56,27 +56,43 @@ export default function AdminSettingsForm() {
           <button onClick={() => saveKeys(["delivery_fee", "commission_rate"])} className="btn-secondary mt-3">حفظ</button>
         </section>
 
-        {/* سياسة إلغاء الطلبات */}
+        {/* الهوية والفاتورة */}
         <section className="card">
           <h2 className="mb-3 flex items-center gap-2 font-bold">
-            <Icon name="debt" size={17} className="text-textSecondary" /> سياسة إلغاء الطلبات
+            <Icon name="invoice" size={17} className="text-textSecondary" /> الاسم والفاتورة
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="label">قيمة/نسبة مديونية الإلغاء</label>
-              <input type="number" dir="ltr" step="0.01" className="input" value={values.cancellation_debt_value ?? 0}
-                onChange={(e) => set("cancellation_debt_value", Number(e.target.value))} />
+              <label className="label">الاسم اللي بيظهر في الفاتورة</label>
+              <input className="input" value={values.brand_name ?? ""} onChange={(e) => set("brand_name", e.target.value)} />
             </div>
             <div>
-              <label className="label">هل القيمة أعلاه نسبة مئوية؟</label>
-              <select className="input" value={String(values.cancellation_debt_is_percentage ?? false)}
-                onChange={(e) => set("cancellation_debt_is_percentage", e.target.value === "true")}>
-                <option value="true">نعم، نسبة مئوية</option>
-                <option value="false">لا، قيمة ثابتة</option>
-              </select>
+              <label className="label">جملة آخر الفاتورة</label>
+              <input className="input" value={values.invoice_footer_text ?? ""} onChange={(e) => set("invoice_footer_text", e.target.value)} />
             </div>
           </div>
-          <button onClick={() => saveKeys(["cancellation_debt_value", "cancellation_debt_is_percentage"])} className="btn-secondary mt-3">حفظ</button>
+          <button onClick={() => saveKeys(["brand_name", "invoice_footer_text"])} className="btn-secondary mt-3">حفظ</button>
+        </section>
+
+        {/* الحماية من الطلبات الوهمية */}
+        <section className="card">
+          <h2 className="mb-3 flex items-center gap-2 font-bold">
+            <Icon name="settings" size={17} className="text-textSecondary" /> الحماية من الطلبات الوهمية
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="label">أقصى عدد طلبات جارية لنفس الرقم/الجهاز</label>
+              <input type="number" dir="ltr" min={1} className="input" value={values.max_active_orders_per_contact ?? 3}
+                onChange={(e) => set("max_active_orders_per_contact", Number(e.target.value))} />
+            </div>
+            <div>
+              <label className="label">أقصى عدد طلبات في اليوم لنفس الرقم/الجهاز</label>
+              <input type="number" dir="ltr" min={1} className="input" value={values.max_orders_per_day ?? 10}
+                onChange={(e) => set("max_orders_per_day", Number(e.target.value))} />
+            </div>
+          </div>
+          <p className="mt-1.5 text-xs text-textSecondary">الحد بيتطبّق على رقم الموبايل ومعرّف الجهاز معًا، وعلى الشبكة (IP) بحد أوسع 5 أضعاف.</p>
+          <button onClick={() => saveKeys(["max_active_orders_per_contact", "max_orders_per_day"])} className="btn-secondary mt-3">حفظ</button>
         </section>
 
         {/* التواصل والدعم */}
@@ -96,10 +112,18 @@ export default function AdminSettingsForm() {
           <h2 className="mb-3 flex items-center gap-2 font-bold">
             <Icon name="payment" size={17} className="text-textSecondary" /> بيانات الدفع الإلكتروني
           </h2>
-          <div className="mb-4 grid gap-3 border-b border-borderc pb-4 sm:grid-cols-2">
+          <div className="mb-4 grid gap-3 border-b border-borderc pb-4 sm:grid-cols-3">
+            <div>
+              <label className="label">الدفع كاش عند الاستلام</label>
+              <select className="input" value={String(values.cash_payment_enabled ?? true)}
+                onChange={(e) => set("cash_payment_enabled", e.target.value === "true")}>
+                <option value="true">مفعّل</option>
+                <option value="false">متوقف</option>
+              </select>
+            </div>
             <div>
               <label className="label">الدفع بالمحفظة الإلكترونية</label>
-              <select className="input" value={String(values.wallet_payment_enabled ?? true)}
+              <select className="input" value={String(values.wallet_payment_enabled ?? false)}
                 onChange={(e) => set("wallet_payment_enabled", e.target.value === "true")}>
                 <option value="true">مفعّل — يظهر كخيار للعميل</option>
                 <option value="false">متوقف — مخفي عن العميل</option>
@@ -107,14 +131,14 @@ export default function AdminSettingsForm() {
             </div>
             <div>
               <label className="label">الدفع بـ InstaPay</label>
-              <select className="input" value={String(values.instapay_payment_enabled ?? true)}
+              <select className="input" value={String(values.instapay_payment_enabled ?? false)}
                 onChange={(e) => set("instapay_payment_enabled", e.target.value === "true")}>
                 <option value="true">مفعّل — يظهر كخيار للعميل</option>
                 <option value="false">متوقف — مخفي عن العميل</option>
               </select>
             </div>
           </div>
-          <p className="mb-3 text-xs text-textSecondary">الدفع كاش يفضل متاح دايمًا ومش قابل للإيقاف.</p>
+          <p className="mb-3 text-xs text-textSecondary">لازم وسيلة دفع واحدة على الأقل تفضل مفعّلة.</p>
           <div className="space-y-4">
             <div>
               <p className="label mb-2">المحفظة الإلكترونية</p>
@@ -135,7 +159,7 @@ export default function AdminSettingsForm() {
               </div>
             </div>
           </div>
-          <button onClick={() => saveKeys(["payment_wallet_details", "payment_instapay_details", "wallet_payment_enabled", "instapay_payment_enabled"])} className="btn-secondary mt-3">حفظ</button>
+          <button onClick={() => saveKeys(["payment_wallet_details", "payment_instapay_details", "cash_payment_enabled", "wallet_payment_enabled", "instapay_payment_enabled"])} className="btn-secondary mt-3">حفظ</button>
         </section>
 
         {/* شعار التطبيق */}

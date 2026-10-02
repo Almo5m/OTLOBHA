@@ -11,9 +11,10 @@ export async function requireRole(allowedRoles: AppRole[]) {
     .from("users")
     .select("role,status")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile) redirect("/login");
   if (profile.status !== "active") redirect("/blocked");
   if (!allowedRoles.includes(profile.role as AppRole)) redirect(homeFor(profile.role));
+  return { userId: user.id, role: profile.role as AppRole };
 }

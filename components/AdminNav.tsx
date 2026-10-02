@@ -31,12 +31,9 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     ]
   },
   {
-    label: "المالية والتسويق",
+    label: "المالية",
     items: [
       { href: "/admin/invoices", label: "الفواتير", icon: "invoice" },
-      { href: "/admin/debts", label: "الديون", icon: "debt" },
-      { href: "/admin/discounts", label: "الخصومات", icon: "wallet" },
-      { href: "/admin/promotions", label: "العروض", icon: "rating" },
       { href: "/admin/reports", label: "التقارير", icon: "reports", superOnly: true }
     ]
   },

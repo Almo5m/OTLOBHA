@@ -6,32 +6,32 @@ import EmptyState from "@/components/EmptyState";
 import SearchEmptyIllustration from "@/components/illustrations/SearchEmptyIllustration";
 import RealtimeRefresher from "@/components/RealtimeRefresher";
 
-const AVAILABILITY_LABELS: Record<string, { label: string; variant: "success" | "warning" | "neutral" }> = {
-  available: { label: "متاح", variant: "success" },
-  busy: { label: "مشغول", variant: "warning" },
-  offline: { label: "غير متصل", variant: "neutral" }
+const ROLE_LABELS: Record<string, { label: string; variant: "success" | "warning" | "neutral" }> = {
+  delivery_agent: { label: "مندوب", variant: "neutral" },
+  business_admin: { label: "أدمن", variant: "warning" },
+  super_admin: { label: "سوبر أدمن", variant: "success" }
 };
 
 export default async function AdminAgentsPage() {
   const supabase = await createServerSupabase();
   const { data: performance } = await supabase.rpc("get_agent_performance");
   const { data: agents } = await supabase
-    .from("users").select("id,full_name,phone,agent_profiles(availability_status)")
-    .eq("role", "delivery_agent");
+    .from("users").select("id,full_name,phone,role")
+    .order("full_name");
 
   const rows = (agents ?? []).map((a: any) => ({
     ...a,
     perf: (performance ?? []).find((p: any) => p.agent_id === a.id),
-    av: AVAILABILITY_LABELS[a.agent_profiles?.availability_status] ?? AVAILABILITY_LABELS.offline
+    av: ROLE_LABELS[a.role] ?? ROLE_LABELS.delivery_agent
   }));
 
   return (
     <>
       <AdminNav />
-      <RealtimeRefresher tables={["users", "agent_profiles"]} channelName="admin-agents-list" />
+      <RealtimeRefresher tables={["users"]} channelName="admin-agents-list" />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
-          <Icon name="agent" size={20} className="text-textSecondary" /> المندوبين
+          <Icon name="agent" size={20} className="text-textSecondary" /> الفريق
         </h1>
 
         {rows.length === 0 ? (

@@ -14,7 +14,7 @@ export default async function AdminProductRequestsPage() {
           id, manual_name, manual_image_url, quantity, target_price, customer_comment, created_at, manual_category_id,
           categories:manual_category_id (name),
           sale_units:unit_id (name),
-          orders:order_id (order_number, users!orders_customer_id_fkey (full_name, phone))
+          orders:order_id (order_number, customer_name, customer_phone)
         `)
         .eq("item_type", "manual")
         .is("converted_product_id", null)

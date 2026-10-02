@@ -5,3 +5,8 @@ project_id = "المفروض تتحط هنا بعد supabase link — شوف ت�
 # الفعلية: Header اسمه x-webhook-secret لازم يطابق السر SEND_PUSH_WEBHOOK_SECRET
 # (راجع README) — من غيره الدالة بترفض أي طلب.
 verify_jwt = false
+
+[auth]
+# مفيش تسجيل مفتوح: حسابات الإداريين بتتعمل من لوحة السوبر أدمن فقط (/super/users).
+# مهم تعطّله كمان من لوحة Supabase: Authentication → Sign In / Providers → "Allow new users to sign up" = OFF
+enable_signup = false
