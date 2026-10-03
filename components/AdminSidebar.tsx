@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "./Icon";
+import { createClient } from "@/lib/supabase/client";
 
 type NavItem = { href: string; label: string; icon: Parameters<typeof Icon>[0]["name"] };
 type NavGroup = { label: string; items: NavItem[] };
@@ -42,6 +43,13 @@ export default function AdminSidebar({ groups, superLinks, isSuperAdmin }: {
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleLogout() {
+    setSigningOut(true);
+    await createClient().auth.signOut();
+    window.location.href = "/login";
+  }
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -105,6 +113,18 @@ export default function AdminSidebar({ groups, superLinks, isSuperAdmin }: {
                 </div>
               )}
             </nav>
+
+            <div className="border-t border-borderc p-3">
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={signingOut}
+                className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-error transition-colors hover:bg-surfaceElevated disabled:opacity-50"
+              >
+                <Icon name="logout" size={18} />
+                {signingOut ? "جارٍ تسجيل الخروج..." : "تسجيل الخروج"}
+              </button>
+            </div>
           </aside>
         </div>,
         document.body

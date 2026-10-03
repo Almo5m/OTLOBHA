@@ -38,22 +38,23 @@ export default function LoginForm() {
     }
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) await recordSession();
 
-    // لو العميل كان جاي من خطوة في الطلب (زي متابعة الدفع)، نرجّعه لنفس
-    // المكان بدل ما نوديه للصفحة الرئيسية — تجربة متصلة وليست منقطعة
-    //
-    // بننقّل بـ window.location بدل router.push عمدًا: التنقل العادي بيقرأ
-    // أحيانًا نسخة من الصفحة كانت اتحمّلت قبل تسجيل الدخول (Router Cache)،
-    // فتحس إن الدخول "مايعملش" غير لو عملت Refresh يدوي. التنقل الكامل ده
-    // بيضمن إن الصفحة الجاية شايفة إن المستخدم بقى مسجّل من أول تحميلة.
-    if (returnTo) {
-      window.location.href = returnTo;
+    // مفيش حسابات عملاء: أي حساب مالوش صف في users مش موظف، فمنسمحش له يفضل مسجّل دخول
+    const { data: profile } = await supabase.from("users").select("role,status").eq("id", user?.id ?? "").maybeSingle();
+    if (!profile) {
+      await supabase.auth.signOut();
+      setError("الحساب ده مش مسجّل كموظف. كلّم السوبر أدمن.");
+      return;
+    }
+    if (profile.status !== "active") {
+      window.location.href = "/blocked";
       return;
     }
 
-    const { data: profile } = await supabase.from("users").select("role").eq("id", user?.id).single();
-    window.location.href = homeFor(profile?.role);
+    await recordSession();
+
+    // بننقّل بـ window.location (مش router.push) عشان الصفحة الجاية تشوف الجلسة من أول تحميلة
+    window.location.href = returnTo || homeFor(profile.role);
   }
 
   return (

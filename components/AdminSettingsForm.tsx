@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Icon from "@/components/Icon";
 import ImageUploadField from "@/components/ImageUploadField";
+import NumberField from "@/components/NumberField";
 
 export default function AdminSettingsForm() {
   const supabase = createClient();
@@ -44,13 +45,11 @@ export default function AdminSettingsForm() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="label">رسوم التوصيل (ج.م)</label>
-              <input type="number" dir="ltr" step="0.01" className="input" value={values.delivery_fee ?? 0}
-                onChange={(e) => set("delivery_fee", Number(e.target.value))} />
+              <NumberField value={values.delivery_fee ?? 0} onValue={(n) => set("delivery_fee", n)} />
             </div>
             <div>
               <label className="label">نسبة العمولة (مثال: 0.10 = 10%)</label>
-              <input type="number" dir="ltr" step="0.01" className="input" value={values.commission_rate ?? 0}
-                onChange={(e) => set("commission_rate", Number(e.target.value))} />
+              <NumberField value={values.commission_rate ?? 0} onValue={(n) => set("commission_rate", n)} />
             </div>
           </div>
           <button onClick={() => saveKeys(["delivery_fee", "commission_rate"])} className="btn-secondary mt-3">حفظ</button>
@@ -82,13 +81,11 @@ export default function AdminSettingsForm() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="label">أقصى عدد طلبات جارية لنفس الرقم/الجهاز</label>
-              <input type="number" dir="ltr" min={1} className="input" value={values.max_active_orders_per_contact ?? 3}
-                onChange={(e) => set("max_active_orders_per_contact", Number(e.target.value))} />
+              <NumberField value={values.max_active_orders_per_contact ?? 3} onValue={(n) => set("max_active_orders_per_contact", n)} />
             </div>
             <div>
               <label className="label">أقصى عدد طلبات في اليوم لنفس الرقم/الجهاز</label>
-              <input type="number" dir="ltr" min={1} className="input" value={values.max_orders_per_day ?? 10}
-                onChange={(e) => set("max_orders_per_day", Number(e.target.value))} />
+              <NumberField value={values.max_orders_per_day ?? 10} onValue={(n) => set("max_orders_per_day", n)} />
             </div>
           </div>
           <p className="mt-1.5 text-xs text-textSecondary">الحد بيتطبّق على رقم الموبايل ومعرّف الجهاز معًا، وعلى الشبكة (IP) بحد أوسع 5 أضعاف.</p>
